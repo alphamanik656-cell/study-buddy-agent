@@ -4,34 +4,38 @@ Built for **QuantumHacks** (Hack4Today).
 
 ## Project Description
 
-Study Buddy turns a wall of study notes into a short list of small, concrete, timed tasks —
-then walks the student through them one at a time with a focus timer and a tutor chat that
-only knows their material.
+Study Buddy turns messy study material into a short, guided study session:
 
-A student pastes notes, or uploads a PDF, a text file, or a photo of handwritten notes. The
-AI reads the material and breaks it into 4–10 bite-sized tasks (each 3–20 minutes, with a
-plain-language summary and a difficulty tag). The student works through the list one task at
-a time using a built-in focus timer, checking tasks off as they go, and can ask a scoped
-tutor chat to clarify anything without leaving the flow or getting an answer that wanders
-off-topic.
+1. **Upload** your notes — paste text, or attach a PDF, a photo of handwritten notes, or a
+   `.txt` file
+2. **AI breaks it into 4–10 small tasks** (3–20 minutes each), in plain language, ordered so
+   foundational ideas come first
+3. **Work through the tasks one at a time** using a built-in focus timer
+4. **Ask the built-in tutor** anything you're stuck on — it answers only from your own notes,
+   so it never drifts off-topic
+
+The result: instead of staring at a page of notes wondering where to even start, you get a
+checklist you can just start ticking off.
 
 ## Problem It Solves & Impact
 
-Long, undifferentiated study material is one of the biggest barriers to getting started for
-students with ADHD, autism, or other executive-function challenges — the "wall of text"
-problem causes task paralysis before studying even begins. Generic study apps assume the
-student can already plan, sequence, and time-box their own work, which is precisely the part
-that's hardest for this population.
+**The problem.** For students with ADHD, autism, or other executive-function challenges, the
+hardest part of studying usually isn't understanding the material — it's *starting*. A page
+of undifferentiated notes with no built-in structure causes task paralysis before any actual
+learning happens. Most study apps assume the student can already break work into steps and
+estimate how long each step takes — that's precisely the skill this population struggles with
+most.
 
-Study Buddy does that planning *for* the student: it converts any source material into an
-ordered, time-boxed checklist automatically, and pairs each task with a short focus-timer
-session so starting never requires deciding what "starting" even means. The tutor chat is
-scoped strictly to the uploaded material, so a student who gets stuck gets a short, relevant
-answer instead of an open-ended AI conversation that can itself become a distraction.
+**The fix.** Study Buddy does that planning step automatically: it reads the material and
+hands back an ordered, time-boxed checklist, so "getting started" just means pressing the
+timer on task one. The tutor chat is deliberately narrow — scoped only to the uploaded
+material — so a student who gets stuck gets a short, relevant answer instead of an
+open-ended AI conversation that can become its own distraction.
 
-This directly targets the "Educational Platforms" and "Social Impact" tracks — it's a small,
-concrete tool aimed at a specific, underserved accessibility need, not a general-purpose
-chatbot wrapper.
+**Why it matters.** This is a small, concrete accessibility tool, not a general-purpose
+chatbot wrapper. It targets a specific, underserved need — executive-function support for
+studying — which is exactly what the "Educational Platforms" and "Social Impact" hackathon
+tracks are looking for.
 
 ## Technologies Used
 
