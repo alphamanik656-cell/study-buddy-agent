@@ -53,7 +53,7 @@ export default function App() {
 
   if (!session) {
     return (
-      <main className="app-shell centered">
+      <main className="app-shell">
         <UploadScreen onSubmit={handleUpload} loading={loading} error={error} />
       </main>
     );
@@ -64,9 +64,9 @@ export default function App() {
   return (
     <main className="app-shell">
       <header className="top-bar">
-        <span className="brand">Study Buddy</span>
+        <span className="brand">🧠 Study Buddy</span>
         <button className="link" onClick={startOver}>
-          Start over
+          ↺ Start over
         </button>
       </header>
 

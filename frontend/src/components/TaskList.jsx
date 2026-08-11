@@ -1,4 +1,4 @@
-const DIFFICULTY_LABEL = { easy: '🟢 easy', medium: '🟡 medium', hard: '🔴 hard' };
+const DIFFICULTY_LABEL = { easy: 'easy', medium: 'medium', hard: 'hard' };
 
 export default function TaskList({ topic, tasks, completed, activeIndex, onSelectTask, onToggleComplete }) {
   const doneCount = completed.size;
@@ -6,7 +6,7 @@ export default function TaskList({ topic, tasks, completed, activeIndex, onSelec
   return (
     <div className="card task-list-card">
       <div className="task-list-header">
-        <h2>{topic}</h2>
+        <h2>📋 {topic}</h2>
         <span className="progress-label">
           {doneCount} / {tasks.length} done
         </span>
@@ -35,7 +35,10 @@ export default function TaskList({ topic, tasks, completed, activeIndex, onSelec
                 <span className="task-title">{task.title}</span>
                 <span className="task-summary">{task.summary}</span>
                 <span className="task-meta">
-                  ⏱ {task.minutes} min · {DIFFICULTY_LABEL[task.difficulty] || task.difficulty}
+                  <span className="meta-chip">⏱ {task.minutes} min</span>
+                  <span className={`difficulty-badge difficulty-${task.difficulty}`}>
+                    {DIFFICULTY_LABEL[task.difficulty] || task.difficulty}
+                  </span>
                 </span>
               </button>
             </li>

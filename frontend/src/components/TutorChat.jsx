@@ -28,7 +28,7 @@ export default function TutorChat({ sourceText }) {
 
   return (
     <div className="card chat-card">
-      <h3>Ask your tutor</h3>
+      <h3>💬 Ask your tutor</h3>
       <p className="task-summary">Questions are answered using only your uploaded material.</p>
 
       <div className="chat-history">
