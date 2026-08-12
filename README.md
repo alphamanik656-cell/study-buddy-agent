@@ -100,7 +100,7 @@ Open http://localhost:5173, paste some notes (or upload a PDF/image/txt file), a
 
 ## Team
 
-- Rohit Manik — solo
+- Ainesh Manik — solo
 
 ## Demo Video / Screenshots / Live Demo
 
