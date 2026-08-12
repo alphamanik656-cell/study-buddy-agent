@@ -28,8 +28,8 @@ export default function UploadScreen({ onSubmit, loading, error }) {
         </div>
         <h1>Study Buddy</h1>
         <p className="subtitle">
-          Upload your notes. Get a short list of small, timed tasks — plus a focus timer
-          and a tutor that only knows your material.
+          Turn any notes into small, doable steps — no walls of text, no overwhelm.
+          Built for brains that work better in short bursts.
         </p>
       </div>
 
@@ -93,14 +93,14 @@ export default function UploadScreen({ onSubmit, loading, error }) {
           {error && <p className="error">⚠️ {error}</p>}
 
           <button type="submit" className="primary big" disabled={loading || (!text.trim() && !file)}>
-            {loading ? '🪄 Generating your task list…' : '🪄 Generate my task list'}
+            {loading ? '🪄 Breaking it down…' : '🪄 Break it down for me'}
           </button>
         </form>
       </div>
 
       <div className="feature-strip">
-        <div className="feature-pill">⏱ Timed, bite-sized tasks</div>
-        <div className="feature-pill">💬 Tutor answers from your notes only</div>
+        <div className="feature-pill">⏱ Bite-sized focus timers</div>
+        <div className="feature-pill">💬 Tutor chat on your material only</div>
         <div className="feature-pill">🔒 Runs fully local, no API key</div>
       </div>
     </div>

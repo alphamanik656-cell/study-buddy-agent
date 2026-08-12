@@ -29,7 +29,7 @@ export default function TutorChat({ sourceText }) {
   return (
     <div className="card chat-card">
       <h3>💬 Ask your tutor</h3>
-      <p className="task-summary">Answers come only from your uploaded material.</p>
+      <p className="task-summary">Questions are answered using only your uploaded material.</p>
 
       <div className="chat-history">
         {history.length === 0 && <p className="chat-empty">Stuck on something? Ask away.</p>}
