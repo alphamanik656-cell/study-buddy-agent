@@ -58,6 +58,13 @@ export default function FocusTimer({ task, onFinish }) {
         </div>
       </div>
 
+      {task.memoryTrick && (
+        <div className="memory-trick-callout">
+          <span className="memory-trick-icon">💡</span>
+          {task.memoryTrick}
+        </div>
+      )}
+
       {isFinished ? (
         <>
           <p className="finished-message">Nice work! Take a short breather before the next one.</p>

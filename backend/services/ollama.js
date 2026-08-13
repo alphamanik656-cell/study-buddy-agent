@@ -4,7 +4,7 @@ const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 const TEXT_MODEL = process.env.OLLAMA_TEXT_MODEL || 'llama3.2';
 const VISION_MODEL = process.env.OLLAMA_VISION_MODEL || 'llama3.2-vision';
 
-async function generate({ model, prompt, images, format }) {
+async function generate({ model, prompt, images, format, temperature = 0.4 }) {
   const res = await fetch(`${OLLAMA_HOST}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -14,7 +14,7 @@ async function generate({ model, prompt, images, format }) {
       images,
       format,
       stream: false,
-      options: { temperature: 0.4 },
+      options: { temperature },
     }),
   });
 
@@ -28,7 +28,12 @@ async function generate({ model, prompt, images, format }) {
 }
 
 export function generateText(prompt, opts = {}) {
-  return generate({ model: TEXT_MODEL, prompt, format: opts.json ? 'json' : undefined });
+  return generate({
+    model: TEXT_MODEL,
+    prompt,
+    format: opts.json ? 'json' : undefined,
+    temperature: opts.temperature,
+  });
 }
 
 export function generateFromImage(prompt, base64Image) {

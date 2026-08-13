@@ -53,7 +53,7 @@ router.post('/breakdown', upload.single('file'), async (req, res, next) => {
       return res.status(400).json({ error: 'No readable text found in the submitted material.' });
     }
 
-    const raw = await generateText(breakdownPrompt(sourceText), { json: true });
+    const raw = await generateText(breakdownPrompt(sourceText), { json: true, temperature: 0.75 });
     const parsed = extractJson(raw);
 
     res.json({

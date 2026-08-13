@@ -40,6 +40,12 @@ export default function TaskList({ topic, tasks, completed, activeIndex, onSelec
                     {DIFFICULTY_LABEL[task.difficulty] || task.difficulty}
                   </span>
                 </span>
+                {task.memoryTrick && (
+                  <span className="memory-trick">
+                    <span className="memory-trick-icon">💡</span>
+                    {task.memoryTrick}
+                  </span>
+                )}
               </button>
             </li>
           );
