@@ -43,7 +43,7 @@ tracks are looking for.
   `prefers-reduced-motion` and `prefers-color-scheme`)
 - **Backend:** Node.js + Express
 - **AI:** [Ollama](https://ollama.com) running locally — `llama3.2` for task breakdown and
-  tutor chat, `llama3.2-vision` for transcribing photographed handwritten notes. No API key,
+  tutor chat, `llava` for transcribing photographed handwritten notes. No API key,
   no per-request cost, fully offline-capable.
 - **File handling:** `multer` for uploads, `pdf-parse` for PDF text extraction
 
@@ -80,7 +80,7 @@ material without needing server-side session storage.
 ```bash
 # 1. Pull the models used by the app
 ollama pull llama3.2
-ollama pull llama3.2-vision
+ollama pull llava
 
 # 2. Backend
 cd backend
