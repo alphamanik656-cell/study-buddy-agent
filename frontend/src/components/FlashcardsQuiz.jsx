@@ -1,29 +1,7 @@
-import { useEffect, useState } from 'react';
-import { requestFlashcards } from '../api';
+import { useState } from 'react';
 
-export default function FlashcardsQuiz({ sourceText }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+export default function FlashcardsQuiz({ data, loading, error, onRegenerate }) {
   const [mode, setMode] = useState('flashcards');
-
-  useEffect(() => {
-    generate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sourceText]);
-
-  async function generate() {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await requestFlashcards({ sourceText });
-      setData(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="card cards-card">
@@ -37,7 +15,7 @@ export default function FlashcardsQuiz({ sourceText }) {
         <button className={`tab ${mode === 'quiz' ? 'active' : ''}`} onClick={() => setMode('quiz')}>
           📝 Quiz
         </button>
-        <button className="link" onClick={generate} disabled={loading}>
+        <button className="link" onClick={onRegenerate} disabled={loading}>
           ↺ Regenerate
         </button>
       </div>
@@ -47,7 +25,7 @@ export default function FlashcardsQuiz({ sourceText }) {
       {error && (
         <>
           <p className="error">⚠️ {error}</p>
-          <button className="secondary" onClick={generate}>
+          <button className="secondary" onClick={onRegenerate}>
             Retry
           </button>
         </>

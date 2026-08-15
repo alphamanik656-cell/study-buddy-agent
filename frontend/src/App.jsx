@@ -4,7 +4,7 @@ import TaskList from './components/TaskList';
 import FocusTimer from './components/FocusTimer';
 import TutorChat from './components/TutorChat';
 import FlashcardsQuiz from './components/FlashcardsQuiz';
-import { requestBreakdown } from './api';
+import { requestBreakdown, requestFlashcards } from './api';
 import './App.css';
 
 export default function App() {
@@ -14,6 +14,10 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [view, setView] = useState('tasks');
+  const [cardsData, setCardsData] = useState(null);
+  const [cardsLoading, setCardsLoading] = useState(false);
+  const [cardsError, setCardsError] = useState('');
+  const [cardsVersion, setCardsVersion] = useState(0);
 
   async function handleUpload({ text, file }) {
     setLoading(true);
@@ -23,10 +27,24 @@ export default function App() {
       setSession(data);
       setCompleted(new Set());
       setActiveIndex(data.tasks.length ? 0 : null);
+      loadFlashcards(data.sourceText); // fire-and-forget: ready by the time the user switches tabs
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadFlashcards(sourceText) {
+    setCardsLoading(true);
+    setCardsError('');
+    try {
+      setCardsData(await requestFlashcards({ sourceText }));
+      setCardsVersion((v) => v + 1);
+    } catch (err) {
+      setCardsError(err.message);
+    } finally {
+      setCardsLoading(false);
     }
   }
 
@@ -52,6 +70,8 @@ export default function App() {
     setActiveIndex(null);
     setError('');
     setView('tasks');
+    setCardsData(null);
+    setCardsError('');
   }
 
   if (!session) {
@@ -104,7 +124,13 @@ export default function App() {
           </div>
         </div>
       ) : (
-        <FlashcardsQuiz sourceText={session.sourceText} />
+        <FlashcardsQuiz
+          key={cardsVersion}
+          data={cardsData}
+          loading={cardsLoading}
+          error={cardsError}
+          onRegenerate={() => loadFlashcards(session.sourceText)}
+        />
       )}
     </main>
   );

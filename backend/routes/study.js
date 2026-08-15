@@ -14,6 +14,18 @@ function extractJson(raw) {
   return JSON.parse(raw.slice(start, end + 1));
 }
 
+// Small local models occasionally under-generate (e.g. return 1-2 tasks instead of the requested 5).
+// A couple of automatic retries catch most of those cases without slowing down the common, already-correct case.
+async function generateJsonWithRetry(prompt, opts, isValid) {
+  let parsed;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const raw = await generateText(prompt, opts);
+    parsed = extractJson(raw);
+    if (isValid(parsed)) return parsed;
+  }
+  return parsed;
+}
+
 async function extractSourceText(req) {
   if (req.body.text && req.body.text.trim()) {
     return req.body.text.trim();
@@ -53,8 +65,11 @@ router.post('/breakdown', upload.single('file'), async (req, res, next) => {
       return res.status(400).json({ error: 'No readable text found in the submitted material.' });
     }
 
-    const raw = await generateText(breakdownPrompt(sourceText), { json: true, temperature: 0.75 });
-    const parsed = extractJson(raw);
+    const parsed = await generateJsonWithRetry(
+      breakdownPrompt(sourceText),
+      { json: true, temperature: 0.5 },
+      (p) => Array.isArray(p.tasks) && p.tasks.length >= 4
+    );
 
     res.json({
       sourceText,
@@ -73,8 +88,11 @@ router.post('/flashcards', async (req, res, next) => {
       return res.status(400).json({ error: 'sourceText is required.' });
     }
 
-    const raw = await generateText(flashcardsPrompt(sourceText), { json: true, temperature: 0.6 });
-    const parsed = extractJson(raw);
+    const parsed = await generateJsonWithRetry(
+      flashcardsPrompt(sourceText),
+      { json: true, temperature: 0.5 },
+      (p) => Array.isArray(p.flashcards) && p.flashcards.length >= 3 && Array.isArray(p.quiz) && p.quiz.length >= 2
+    );
 
     res.json({
       flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
