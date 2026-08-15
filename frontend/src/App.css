@@ -65,19 +65,6 @@
   max-width: 560px;
 }
 
-.hero-badge {
-  display: inline-block;
-  background: var(--plum-soft);
-  color: var(--plum);
-  font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 6px 14px;
-  border-radius: 999px;
-  margin-bottom: 10px;
-}
-
 .hero-mascot {
   font-size: 3.2rem;
   line-height: 1;

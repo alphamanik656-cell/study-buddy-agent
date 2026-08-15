@@ -22,7 +22,6 @@ export default function UploadScreen({ onSubmit, loading, error }) {
   return (
     <div className="upload-page">
       <div className="hero">
-        <span className="hero-badge">✨ QuantumHacks 2026</span>
         <div className="hero-mascot" aria-hidden="true">
           🧠
         </div>
