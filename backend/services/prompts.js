@@ -5,8 +5,8 @@ export function ocrPrompt() {
 }
 
 export function breakdownPrompt(sourceText) {
-  return `Study coach for ADHD/neurodivergent students. Break the material below into exactly 5 small tasks,
-ordered logically (foundational first). Stay strictly within the material given.
+  return `Your task: break the study material at the bottom of this prompt into exactly 5 small tasks for an
+ADHD/neurodivergent student, ordered logically (foundational first). Stay strictly within that material.
 The "tasks" array MUST contain exactly 5 items — not fewer, not more.
 
 Each task needs:
@@ -16,6 +16,9 @@ Each task needs:
 - "difficulty": "easy" | "medium" | "hard"
 - "memoryTrick": ONE short, playful memory aid tied to this task's content — an acronym/silly sentence for a
   list of terms, or a vivid one-line mental image if there's no list. Never generic advice. Max 15 words.
+
+"topic" must be a 2-5 word title naming the MATERIAL's subject (e.g. "Water Cycle Basics"), never a
+description of these instructions.
 
 JSON only, no markdown fences, no extra text. The "tasks" array below shows only 2 example items but you
 MUST output 5 — keep going, do not stop early:

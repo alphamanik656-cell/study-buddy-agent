@@ -1,34 +1,75 @@
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
 
+async function request(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...options });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed.');
+  return data;
+}
+
+function jsonRequest(path, body, method = 'POST') {
+  return request(path, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+// --- Auth ---
+
+export function signUp({ email, password }) {
+  return jsonRequest('/auth/signup', { email, password });
+}
+
+export function signIn({ email, password }) {
+  return jsonRequest('/auth/signin', { email, password });
+}
+
+export function signOut() {
+  return request('/auth/signout', { method: 'POST' });
+}
+
+export function getCurrentUser() {
+  return request('/auth/me');
+}
+
+// --- Study sessions ---
+
+export async function listSessions() {
+  const { sessions } = await request('/sessions');
+  return sessions;
+}
+
+export function createSession({ topic, sourceText, tasks }) {
+  return jsonRequest('/sessions', { topic, sourceText, tasks });
+}
+
+export function getSession(id) {
+  return request(`/sessions/${id}`);
+}
+
+export function updateSession(id, { completed, flashcards }) {
+  return jsonRequest(`/sessions/${id}`, { completed, flashcards }, 'PATCH');
+}
+
+export function deleteSession(id) {
+  return request(`/sessions/${id}`, { method: 'DELETE' });
+}
+
+// --- AI generation ---
+
 export async function requestBreakdown({ text, file }) {
   const form = new FormData();
   if (text) form.append('text', text);
   if (file) form.append('file', file);
-
-  const res = await fetch(`${API_BASE}/breakdown`, { method: 'POST', body: form });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to break down material.');
-  return data;
+  return request('/breakdown', { method: 'POST', body: form, credentials: 'include' });
 }
 
-export async function requestFlashcards({ sourceText }) {
-  const res = await fetch(`${API_BASE}/flashcards`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sourceText }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to generate flashcards.');
-  return data;
+export function requestFlashcards({ sourceText }) {
+  return jsonRequest('/flashcards', { sourceText });
 }
 
 export async function sendChatMessage({ sourceText, history, message }) {
-  const res = await fetch(`${API_BASE}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sourceText, history, message }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to get a reply.');
-  return data.reply;
+  const { reply } = await jsonRequest('/chat', { sourceText, history, message });
+  return reply;
 }

@@ -1,14 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import AuthScreen from './components/AuthScreen';
+import SessionDashboard from './components/SessionDashboard';
 import UploadScreen from './components/UploadScreen';
 import TaskList from './components/TaskList';
 import FocusTimer from './components/FocusTimer';
 import TutorChat from './components/TutorChat';
 import FlashcardsQuiz from './components/FlashcardsQuiz';
-import { requestBreakdown, requestFlashcards } from './api';
+import {
+  createSession,
+  getCurrentUser,
+  getSession,
+  requestBreakdown,
+  requestFlashcards,
+  signOut,
+  updateSession,
+} from './api';
 import './App.css';
 
 export default function App() {
-  const [session, setSession] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
+  const [screen, setScreen] = useState('dashboard'); // 'dashboard' | 'upload' | 'study'
+
+  const [session, setSession] = useState(null); // { id, topic, sourceText, tasks }
   const [completed, setCompleted] = useState(new Set());
   const [activeIndex, setActiveIndex] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -19,15 +33,25 @@ export default function App() {
   const [cardsError, setCardsError] = useState('');
   const [cardsVersion, setCardsVersion] = useState(0);
 
+  useEffect(() => {
+    getCurrentUser()
+      .then(({ user }) => setUser(user))
+      .catch(() => setUser(null))
+      .finally(() => setAuthChecked(true));
+  }, []);
+
   async function handleUpload({ text, file }) {
     setLoading(true);
     setError('');
     try {
       const data = await requestBreakdown({ text, file });
-      setSession(data);
+      const saved = await createSession({ topic: data.topic, sourceText: data.sourceText, tasks: data.tasks });
+      setSession(saved);
       setCompleted(new Set());
-      setActiveIndex(data.tasks.length ? 0 : null);
-      loadFlashcards(data.sourceText); // fire-and-forget: ready by the time the user switches tabs
+      setActiveIndex(saved.tasks.length ? 0 : null);
+      setScreen('study');
+      setView('tasks');
+      loadFlashcards(saved.sourceText); // fire-and-forget: ready by the time the user switches tabs
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,12 +59,33 @@ export default function App() {
     }
   }
 
+  async function openSession(id) {
+    setError('');
+    try {
+      const data = await getSession(id);
+      setSession(data);
+      setCompleted(new Set(data.completed));
+      const firstIncomplete = data.tasks.findIndex((_, i) => !data.completed.includes(i));
+      setActiveIndex(firstIncomplete === -1 ? null : firstIncomplete);
+      setCardsData(data.flashcards);
+      setCardsError('');
+      setCardsVersion((v) => v + 1);
+      setScreen('study');
+      setView('tasks');
+      if (!data.flashcards) loadFlashcards(data.sourceText);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   async function loadFlashcards(sourceText) {
     setCardsLoading(true);
     setCardsError('');
     try {
-      setCardsData(await requestFlashcards({ sourceText }));
+      const data = await requestFlashcards({ sourceText });
+      setCardsData(data);
       setCardsVersion((v) => v + 1);
+      if (session?.id) updateSession(session.id, { flashcards: data }).catch(() => {});
     } catch (err) {
       setCardsError(err.message);
     } finally {
@@ -48,23 +93,32 @@ export default function App() {
     }
   }
 
+  function persistCompleted(nextSet) {
+    if (session?.id) updateSession(session.id, { completed: Array.from(nextSet) }).catch(() => {});
+  }
+
   function toggleComplete(index) {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (next.has(index)) next.delete(index);
       else next.add(index);
+      persistCompleted(next);
       return next;
     });
   }
 
   function handleTimerFinish() {
     if (activeIndex === null) return;
-    setCompleted((prev) => new Set(prev).add(activeIndex));
-    const nextIndex = session.tasks.findIndex((_, i) => i > activeIndex && !completed.has(i));
-    setActiveIndex(nextIndex === -1 ? null : nextIndex);
+    setCompleted((prev) => {
+      const next = new Set(prev).add(activeIndex);
+      persistCompleted(next);
+      const nextIndex = session.tasks.findIndex((_, i) => i > activeIndex && !next.has(i));
+      setActiveIndex(nextIndex === -1 ? null : nextIndex);
+      return next;
+    });
   }
 
-  function startOver() {
+  function goToDashboard() {
     setSession(null);
     setCompleted(new Set());
     setActiveIndex(null);
@@ -72,11 +126,50 @@ export default function App() {
     setView('tasks');
     setCardsData(null);
     setCardsError('');
+    setScreen('dashboard');
   }
 
-  if (!session) {
+  async function handleSignOut() {
+    await signOut().catch(() => {});
+    setUser(null);
+    goToDashboard();
+  }
+
+  if (!authChecked) {
+    return <main className="app-shell" />;
+  }
+
+  if (!user) {
     return (
       <main className="app-shell">
+        <AuthScreen onAuthed={setUser} />
+      </main>
+    );
+  }
+
+  if (screen === 'dashboard') {
+    return (
+      <main className="app-shell">
+        <header className="top-bar">
+          <span className="brand">🧠 Study Buddy</span>
+          <button className="link" onClick={handleSignOut}>
+            Sign out
+          </button>
+        </header>
+        <SessionDashboard userEmail={user.email} onStartNew={() => setScreen('upload')} onOpenSession={openSession} />
+      </main>
+    );
+  }
+
+  if (screen === 'upload') {
+    return (
+      <main className="app-shell">
+        <header className="top-bar">
+          <span className="brand">🧠 Study Buddy</span>
+          <button className="link" onClick={goToDashboard}>
+            ← My sessions
+          </button>
+        </header>
         <UploadScreen onSubmit={handleUpload} loading={loading} error={error} />
       </main>
     );
@@ -96,8 +189,8 @@ export default function App() {
             📇 Flashcards &amp; Quiz
           </button>
         </div>
-        <button className="link" onClick={startOver}>
-          ↺ Start over
+        <button className="link" onClick={goToDashboard}>
+          📚 My sessions
         </button>
       </header>
 

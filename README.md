@@ -23,6 +23,9 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 - **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,
   or zoned out during a lecture. Paste notes, upload a PDF, or snap a photo of handwritten
   notes — Study Buddy reads it all.
+- **Accounts & Saved Sessions** — sign up, and every study session (tasks, progress, flashcards)
+  is saved to your private account. Pick up exactly where you left off, or delete sessions you
+  no longer need.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
@@ -55,6 +58,9 @@ tracks are looking for.
 - **AI:** [Ollama](https://ollama.com) running locally — `llama3.2` for task breakdown and
   tutor chat, `llava` for transcribing photographed handwritten notes. No API key,
   no per-request cost, fully offline-capable.
+- **Auth & storage:** `node:sqlite` (Node's built-in SQLite — no native module install) for
+  users and saved sessions; passwords hashed with `node:crypto` scrypt; httpOnly cookie
+  sessions via `cookie-parser` (no external auth service or JWT library needed)
 - **File handling:** `multer` for uploads, `pdf-parse` for PDF text extraction
 
 ## Architecture
@@ -63,15 +69,23 @@ tracks are looking for.
 study-buddy-agent/
 ├── backend/
 │   ├── server.js              Express app entrypoint
-│   ├── routes/study.js        POST /api/breakdown, POST /api/flashcards, POST /api/chat
+│   ├── middleware/requireAuth.js   cookie session -> req.userId, 401 otherwise
+│   ├── routes/
+│   │   ├── auth.js            POST /api/auth/{signup,signin,signout}, GET /api/auth/me
+│   │   ├── sessions.js        CRUD for saved study sessions (auth-protected)
+│   │   └── study.js           POST /api/breakdown, POST /api/flashcards, POST /api/chat (auth-protected)
 │   └── services/
+│       ├── db.js              node:sqlite setup (users, auth_tokens, study_sessions tables)
+│       ├── auth.js            password hashing (scrypt) + session token generation
 │       ├── ollama.js          thin client for the local Ollama HTTP API
 │       └── prompts.js         prompt templates (OCR, breakdown, flashcards/quiz, tutor)
 └── frontend/
     └── src/
-        ├── App.jsx            top-level state: upload → study session
-        ├── api.js             fetch wrappers for the backend
+        ├── App.jsx            top-level state: auth -> dashboard -> study session
+        ├── api.js             fetch wrappers for the backend (credentialed for cookies)
         └── components/
+            ├── AuthScreen.jsx
+            ├── SessionDashboard.jsx
             ├── UploadScreen.jsx
             ├── TaskList.jsx
             ├── FocusTimer.jsx
@@ -79,10 +93,14 @@ study-buddy-agent/
             └── TutorChat.jsx
 ```
 
-The backend is intentionally stateless — no database. Each `/api/breakdown` response returns
-the extracted `sourceText` alongside the generated tasks, and the frontend passes that same
-`sourceText` back on every `/api/chat` call so answers stay grounded in the student's own
-material without needing server-side session storage.
+Auth uses an httpOnly cookie holding a random session token, checked against the
+`auth_tokens` table on every request — no JWT library, just `node:crypto` and SQLite. Each
+signed-in user only ever sees their own sessions (every query is scoped by `user_id`). A study
+session's `sourceText` is stored once at creation and reused for every `/api/chat` and
+`/api/flashcards` call on that session, so the tutor and quiz stay grounded in the student's
+own material. Completed-task progress and generated flashcards are synced back to the
+database in the background as the student works, so closing the tab or refreshing never loses
+progress.
 
 ## Installation Instructions
 
@@ -106,8 +124,10 @@ cp .env.example .env
 npm run dev         # starts on http://localhost:5173
 ```
 
-Open http://localhost:5173, paste some notes (or upload a PDF/image/txt file), and click
-"Break it down for me."
+Open http://localhost:5173, sign up with any email/password (8+ characters — stored locally
+in `backend/data.sqlite`, created automatically on first run), then start a new session: paste
+some notes (or upload a PDF/image/txt file) and click "Break it down for me." Past sessions
+are listed on the dashboard after you sign back in, and can be reopened or deleted.
 
 ## Team
 

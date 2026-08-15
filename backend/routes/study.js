@@ -58,6 +58,14 @@ async function extractSourceText(req) {
   throw err;
 }
 
+// Small local models occasionally leak the prompt's own instructions into the "topic" field
+// (e.g. "Study coach for ADHD/neurodivergent students") instead of naming the material's subject.
+const LEAKED_TOPIC_PATTERN = /adhd|neurodivergent|study coach|these instructions/i;
+function sanitizeTopic(topic) {
+  if (!topic || LEAKED_TOPIC_PATTERN.test(topic)) return 'Study session';
+  return topic;
+}
+
 router.post('/breakdown', upload.single('file'), async (req, res, next) => {
   try {
     const sourceText = await extractSourceText(req);
@@ -73,7 +81,7 @@ router.post('/breakdown', upload.single('file'), async (req, res, next) => {
 
     res.json({
       sourceText,
-      topic: parsed.topic || 'Study session',
+      topic: sanitizeTopic(parsed.topic),
       tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
     });
   } catch (err) {
