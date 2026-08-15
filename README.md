@@ -4,18 +4,28 @@ Built for **QuantumHacks** (Hack4Today).
 
 ## Project Description
 
-Study Buddy turns messy study material into a short, guided study session:
+**Introducing Study Buddy: Your Ultimate AI Learning Companion**
 
-1. **Upload** your notes — paste text, or attach a PDF, a photo of handwritten notes, or a
-   `.txt` file
-2. **AI breaks it into 4–10 small tasks** (3–20 minutes each), in plain language, ordered so
-   foundational ideas come first
-3. **Work through the tasks one at a time** using a built-in focus timer
-4. **Ask the built-in tutor** anything you're stuck on — it answers only from your own notes,
-   so it never drifts off-topic
+Struggling to decipher complex class notes or catch up after a missed lecture? Study Buddy
+transforms your messy study materials into clear, actionable learning tools in seconds. Just
+upload your teacher's notes, slides, or syllabus, and let Study Buddy do the heavy lifting.
 
-The result: instead of staring at a page of notes wondering where to even start, you get a
-checklist you can just start ticking off.
+**Key Features**
+
+- **Instant Concept Breakdown** — simplifies dense, confusing topics into small, ordered,
+  time-boxed tasks with plain-language explanations, so you always know exactly what to do
+  next.
+- **Smart Flashcards & Quizzes** — automatically generates custom flashcards and targeted
+  multiple-choice practice questions (with instant feedback and explanations) to test your
+  knowledge before exam day.
+- **Memory Hacks & Study Tips** — every task comes with a mnemonic, silly acronym, or vivid
+  mental image tied to that specific content, to help tough concepts stick.
+- **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,
+  or zoned out during a lecture. Paste notes, upload a PDF, or snap a photo of handwritten
+  notes — Study Buddy reads it all.
+
+Whether you're prepping for a final, catching up after a sick day, or just need a second
+explanation, Study Buddy ensures you never fall behind.
 
 ## Problem It Solves & Impact
 
@@ -53,10 +63,10 @@ tracks are looking for.
 study-buddy-agent/
 ├── backend/
 │   ├── server.js              Express app entrypoint
-│   ├── routes/study.js        POST /api/breakdown, POST /api/chat
+│   ├── routes/study.js        POST /api/breakdown, POST /api/flashcards, POST /api/chat
 │   └── services/
 │       ├── ollama.js          thin client for the local Ollama HTTP API
-│       └── prompts.js         prompt templates (OCR, breakdown, tutor)
+│       └── prompts.js         prompt templates (OCR, breakdown, flashcards/quiz, tutor)
 └── frontend/
     └── src/
         ├── App.jsx            top-level state: upload → study session
@@ -65,6 +75,7 @@ study-buddy-agent/
             ├── UploadScreen.jsx
             ├── TaskList.jsx
             ├── FocusTimer.jsx
+            ├── FlashcardsQuiz.jsx
             └── TutorChat.jsx
 ```
 
