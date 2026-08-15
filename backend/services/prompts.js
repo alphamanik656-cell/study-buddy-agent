@@ -42,6 +42,40 @@ ${sourceText}
 """`;
 }
 
+export function flashcardsPrompt(sourceText) {
+  return `You are a study coach building review materials strictly from the study material below.
+
+Produce two things:
+
+1. "flashcards": 5 to 8 cards. Each has a "front" (a short term or question) and a "back" (a concise,
+   plain-language answer or definition, 1-2 sentences). Cover the most important facts a student would
+   need to recall, not trivial details.
+
+2. "quiz": 4 to 6 multiple-choice questions. Each has:
+   - "question": a clear question testing understanding, not just word-matching
+   - "choices": exactly 4 answer options as strings
+   - "correctIndex": the 0-based index of the correct choice in "choices"
+   - "explanation": one sentence explaining why that answer is correct
+
+Keep everything tied strictly to the material provided — do not invent facts that aren't in it or reasonably
+implied by it.
+
+Respond ONLY with valid JSON matching exactly this shape, no markdown fences, no extra text:
+{
+  "flashcards": [
+    { "front": "...", "back": "..." }
+  ],
+  "quiz": [
+    { "question": "...", "choices": ["...", "...", "...", "..."], "correctIndex": 0, "explanation": "..." }
+  ]
+}
+
+STUDY MATERIAL:
+"""
+${sourceText}
+"""`;
+}
+
 export function tutorSystemPrompt(sourceText) {
   return `You are a patient, encouraging study tutor helping a neurodivergent student understand their own notes.
 Answer ONLY using the study material below — if the answer isn't in the material, say so plainly rather than

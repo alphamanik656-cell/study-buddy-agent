@@ -11,6 +11,17 @@ export async function requestBreakdown({ text, file }) {
   return data;
 }
 
+export async function requestFlashcards({ sourceText }) {
+  const res = await fetch(`${API_BASE}/flashcards`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sourceText }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to generate flashcards.');
+  return data;
+}
+
 export async function sendChatMessage({ sourceText, history, message }) {
   const res = await fetch(`${API_BASE}/chat`, {
     method: 'POST',

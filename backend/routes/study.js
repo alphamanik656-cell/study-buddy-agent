@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import { generateText, generateFromImage } from '../services/ollama.js';
-import { ocrPrompt, breakdownPrompt, tutorSystemPrompt } from '../services/prompts.js';
+import { ocrPrompt, breakdownPrompt, flashcardsPrompt, tutorSystemPrompt } from '../services/prompts.js';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
@@ -60,6 +60,25 @@ router.post('/breakdown', upload.single('file'), async (req, res, next) => {
       sourceText,
       topic: parsed.topic || 'Study session',
       tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/flashcards', async (req, res, next) => {
+  try {
+    const { sourceText } = req.body;
+    if (!sourceText) {
+      return res.status(400).json({ error: 'sourceText is required.' });
+    }
+
+    const raw = await generateText(flashcardsPrompt(sourceText), { json: true, temperature: 0.6 });
+    const parsed = extractJson(raw);
+
+    res.json({
+      flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
+      quiz: Array.isArray(parsed.quiz) ? parsed.quiz : [],
     });
   } catch (err) {
     next(err);

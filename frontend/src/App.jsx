@@ -3,6 +3,7 @@ import UploadScreen from './components/UploadScreen';
 import TaskList from './components/TaskList';
 import FocusTimer from './components/FocusTimer';
 import TutorChat from './components/TutorChat';
+import FlashcardsQuiz from './components/FlashcardsQuiz';
 import { requestBreakdown } from './api';
 import './App.css';
 
@@ -12,6 +13,7 @@ export default function App() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [view, setView] = useState('tasks');
 
   async function handleUpload({ text, file }) {
     setLoading(true);
@@ -49,6 +51,7 @@ export default function App() {
     setCompleted(new Set());
     setActiveIndex(null);
     setError('');
+    setView('tasks');
   }
 
   if (!session) {
@@ -65,32 +68,44 @@ export default function App() {
     <main className="app-shell">
       <header className="top-bar">
         <span className="brand">🧠 Study Buddy</span>
+        <div className="view-toggle">
+          <button className={`tab ${view === 'tasks' ? 'active' : ''}`} onClick={() => setView('tasks')}>
+            📋 Tasks
+          </button>
+          <button className={`tab ${view === 'cards' ? 'active' : ''}`} onClick={() => setView('cards')}>
+            📇 Flashcards &amp; Quiz
+          </button>
+        </div>
         <button className="link" onClick={startOver}>
           ↺ Start over
         </button>
       </header>
 
-      <div className="study-layout">
-        <TaskList
-          topic={session.topic}
-          tasks={session.tasks}
-          completed={completed}
-          activeIndex={activeIndex}
-          onSelectTask={setActiveIndex}
-          onToggleComplete={toggleComplete}
-        />
+      {view === 'tasks' ? (
+        <div className="study-layout">
+          <TaskList
+            topic={session.topic}
+            tasks={session.tasks}
+            completed={completed}
+            activeIndex={activeIndex}
+            onSelectTask={setActiveIndex}
+            onToggleComplete={toggleComplete}
+          />
 
-        <div className="side-column">
-          {activeTask ? (
-            <FocusTimer key={activeIndex} task={activeTask} onFinish={handleTimerFinish} />
-          ) : (
-            <div className="card focus-timer-card">
-              <p className="finished-message">🎉 All tasks complete for this session!</p>
-            </div>
-          )}
-          <TutorChat sourceText={session.sourceText} />
+          <div className="side-column">
+            {activeTask ? (
+              <FocusTimer key={activeIndex} task={activeTask} onFinish={handleTimerFinish} />
+            ) : (
+              <div className="card focus-timer-card">
+                <p className="finished-message">🎉 All tasks complete for this session!</p>
+              </div>
+            )}
+            <TutorChat sourceText={session.sourceText} />
+          </div>
         </div>
-      </div>
+      ) : (
+        <FlashcardsQuiz sourceText={session.sourceText} />
+      )}
     </main>
   );
 }
