@@ -65,9 +65,7 @@ export default function SessionDashboard({ userEmail, onStartNew, onOpenSession 
                 <button className="session-item-body" onClick={() => onOpenSession(s.id)}>
                   <span className="task-title">{s.topic}</span>
                   <span className="task-meta">
-                    <span className="meta-chip">
-                      {s.completedCount} / {s.taskCount} tasks done
-                    </span>
+                    <span className="meta-chip">{s.sectionCount} sections</span>
                     <span className="meta-chip">{new Date(s.updatedAt).toLocaleDateString()}</span>
                   </span>
                 </button>

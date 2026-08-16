@@ -40,16 +40,16 @@ export async function listSessions() {
   return sessions;
 }
 
-export function createSession({ topic, sourceText, tasks }) {
-  return jsonRequest('/sessions', { topic, sourceText, tasks });
+export function createSession({ topic, sourceText, sections }) {
+  return jsonRequest('/sessions', { topic, sourceText, sections });
 }
 
 export function getSession(id) {
   return request(`/sessions/${id}`);
 }
 
-export function updateSession(id, { completed, flashcards }) {
-  return jsonRequest(`/sessions/${id}`, { completed, flashcards }, 'PATCH');
+export function updateSession(id, { flashcards }) {
+  return jsonRequest(`/sessions/${id}`, { flashcards }, 'PATCH');
 }
 
 export function deleteSession(id) {

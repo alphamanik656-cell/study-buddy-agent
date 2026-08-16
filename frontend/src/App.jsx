@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import AuthScreen from './components/AuthScreen';
 import SessionDashboard from './components/SessionDashboard';
 import UploadScreen from './components/UploadScreen';
-import TaskList from './components/TaskList';
-import FocusTimer from './components/FocusTimer';
+import NotesBreakdown from './components/NotesBreakdown';
 import TutorChat from './components/TutorChat';
 import FlashcardsQuiz from './components/FlashcardsQuiz';
 import {
@@ -22,12 +21,10 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [screen, setScreen] = useState('dashboard'); // 'dashboard' | 'upload' | 'study'
 
-  const [session, setSession] = useState(null); // { id, topic, sourceText, tasks }
-  const [completed, setCompleted] = useState(new Set());
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [session, setSession] = useState(null); // { id, topic, sourceText, sections }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [view, setView] = useState('tasks');
+  const [view, setView] = useState('breakdown'); // 'breakdown' | 'cards'
   const [cardsData, setCardsData] = useState(null);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState('');
@@ -45,12 +42,10 @@ export default function App() {
     setError('');
     try {
       const data = await requestBreakdown({ text, file });
-      const saved = await createSession({ topic: data.topic, sourceText: data.sourceText, tasks: data.tasks });
+      const saved = await createSession({ topic: data.topic, sourceText: data.sourceText, sections: data.sections });
       setSession(saved);
-      setCompleted(new Set());
-      setActiveIndex(saved.tasks.length ? 0 : null);
       setScreen('study');
-      setView('tasks');
+      setView('breakdown');
       loadFlashcards(saved.sourceText); // fire-and-forget: ready by the time the user switches tabs
     } catch (err) {
       setError(err.message);
@@ -64,14 +59,11 @@ export default function App() {
     try {
       const data = await getSession(id);
       setSession(data);
-      setCompleted(new Set(data.completed));
-      const firstIncomplete = data.tasks.findIndex((_, i) => !data.completed.includes(i));
-      setActiveIndex(firstIncomplete === -1 ? null : firstIncomplete);
       setCardsData(data.flashcards);
       setCardsError('');
       setCardsVersion((v) => v + 1);
       setScreen('study');
-      setView('tasks');
+      setView('breakdown');
       if (!data.flashcards) loadFlashcards(data.sourceText);
     } catch (err) {
       setError(err.message);
@@ -93,37 +85,10 @@ export default function App() {
     }
   }
 
-  function persistCompleted(nextSet) {
-    if (session?.id) updateSession(session.id, { completed: Array.from(nextSet) }).catch(() => {});
-  }
-
-  function toggleComplete(index) {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      persistCompleted(next);
-      return next;
-    });
-  }
-
-  function handleTimerFinish() {
-    if (activeIndex === null) return;
-    setCompleted((prev) => {
-      const next = new Set(prev).add(activeIndex);
-      persistCompleted(next);
-      const nextIndex = session.tasks.findIndex((_, i) => i > activeIndex && !next.has(i));
-      setActiveIndex(nextIndex === -1 ? null : nextIndex);
-      return next;
-    });
-  }
-
   function goToDashboard() {
     setSession(null);
-    setCompleted(new Set());
-    setActiveIndex(null);
     setError('');
-    setView('tasks');
+    setView('breakdown');
     setCardsData(null);
     setCardsError('');
     setScreen('dashboard');
@@ -175,15 +140,13 @@ export default function App() {
     );
   }
 
-  const activeTask = activeIndex !== null ? session.tasks[activeIndex] : null;
-
   return (
     <main className="app-shell">
       <header className="top-bar">
         <span className="brand">🧠 Study Buddy</span>
         <div className="view-toggle">
-          <button className={`tab ${view === 'tasks' ? 'active' : ''}`} onClick={() => setView('tasks')}>
-            📋 Tasks
+          <button className={`tab ${view === 'breakdown' ? 'active' : ''}`} onClick={() => setView('breakdown')}>
+            📖 Breakdown
           </button>
           <button className={`tab ${view === 'cards' ? 'active' : ''}`} onClick={() => setView('cards')}>
             📇 Flashcards &amp; Quiz
@@ -194,25 +157,10 @@ export default function App() {
         </button>
       </header>
 
-      {view === 'tasks' ? (
+      {view === 'breakdown' ? (
         <div className="study-layout">
-          <TaskList
-            topic={session.topic}
-            tasks={session.tasks}
-            completed={completed}
-            activeIndex={activeIndex}
-            onSelectTask={setActiveIndex}
-            onToggleComplete={toggleComplete}
-          />
-
+          <NotesBreakdown topic={session.topic} sections={session.sections} />
           <div className="side-column">
-            {activeTask ? (
-              <FocusTimer key={activeIndex} task={activeTask} onFinish={handleTimerFinish} />
-            ) : (
-              <div className="card focus-timer-card">
-                <p className="finished-message">🎉 All tasks complete for this session!</p>
-              </div>
-            )}
             <TutorChat sourceText={session.sourceText} />
           </div>
         </div>

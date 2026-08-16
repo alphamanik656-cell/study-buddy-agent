@@ -75,14 +75,14 @@ router.post('/breakdown', upload.single('file'), async (req, res, next) => {
 
     const parsed = await generateJsonWithRetry(
       breakdownPrompt(sourceText),
-      { json: true, temperature: 0.5 },
-      (p) => Array.isArray(p.tasks) && p.tasks.length >= 4
+      { json: true, temperature: 0.5, maxTokens: 900 },
+      (p) => Array.isArray(p.sections) && p.sections.length >= 4
     );
 
     res.json({
       sourceText,
       topic: sanitizeTopic(parsed.topic),
-      tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
+      sections: Array.isArray(parsed.sections) ? parsed.sections : [],
     });
   } catch (err) {
     next(err);

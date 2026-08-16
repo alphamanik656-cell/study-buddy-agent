@@ -5,24 +5,25 @@ export function ocrPrompt() {
 }
 
 export function breakdownPrompt(sourceText) {
-  return `Your task: break the study material at the bottom of this prompt into exactly 5 small tasks for an
-ADHD/neurodivergent student, ordered logically (foundational first). Stay strictly within that material.
-The "tasks" array MUST contain exactly 5 items — not fewer, not more.
+  return `Your task: break the study material at the bottom of this prompt into exactly 5 sections that
+literally explain its content in plain language, so a student who is confused by the original wording can
+actually understand it. Order sections the way the material itself is ordered (foundational concepts first).
+Stay strictly within that material — do not invent facts it doesn't contain. The "sections" array MUST
+contain exactly 5 items — not fewer, not more.
 
-Each task needs:
-- "title": specific to the content, starts with a verb (e.g. "Skim section on chlorophyll", not just "Skim")
-- "summary": 1 short sentence in plain words, not copied from the source
-- "minutes": realistic estimate, 3-20
-- "difficulty": "easy" | "medium" | "hard"
-- "memoryTrick": ONE short, playful memory aid tied to this task's content — an acronym/silly sentence for a
-  list of terms, or a vivid one-line mental image if there's no list. Never generic advice. Max 15 words.
+Each section needs:
+- "heading": short, names the specific concept this section explains (e.g. "Chlorophyll's role", not "Part 1")
+- "explanation": 2-4 sentences that actually explain this concept in plain, simple words — a real
+  explanation a confused student could learn from, not a one-line label and not copied from the source
+- "memoryTrick": ONE short, playful memory aid tied to this section's content — an acronym/silly sentence for
+  a list of terms, or a vivid one-line mental image if there's no list. Never generic advice. Max 15 words.
 
 "topic" must be a 2-5 word title naming the MATERIAL's subject (e.g. "Water Cycle Basics"), never a
 description of these instructions.
 
-JSON only, no markdown fences, no extra text. The "tasks" array below shows only 2 example items but you
+JSON only, no markdown fences, no extra text. The "sections" array below shows only 2 example items but you
 MUST output 5 — keep going, do not stop early:
-{"topic":"...","tasks":[{"title":"...","summary":"...","minutes":10,"difficulty":"easy","memoryTrick":"..."},{"title":"...","summary":"...","minutes":10,"difficulty":"easy","memoryTrick":"..."}, ... 3 more tasks ...]}
+{"topic":"...","sections":[{"heading":"...","explanation":"...","memoryTrick":"..."},{"heading":"...","explanation":"...","memoryTrick":"..."}, ... 3 more sections ...]}
 
 MATERIAL:
 """

@@ -1,4 +1,4 @@
-# Study Buddy — AI notes, broken into small steps
+# Study Buddy — AI notes, explained in plain language
 
 Built for **QuantumHacks** (Hack4Today).
 
@@ -12,38 +12,37 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 
 **Key Features**
 
-- **Instant Concept Breakdown** — simplifies dense, confusing topics into small, ordered,
-  time-boxed tasks with plain-language explanations, so you always know exactly what to do
-  next.
+- **Instant Concept Breakdown** — turns dense, confusing notes into a numbered, plain-language
+  walkthrough: each section names a specific concept and actually explains it in simple words,
+  instead of just re-showing the original text.
 - **Smart Flashcards & Quizzes** — automatically generates custom flashcards and targeted
   multiple-choice practice questions (with instant feedback and explanations) to test your
   knowledge before exam day.
-- **Memory Hacks & Study Tips** — every task comes with a mnemonic, silly acronym, or vivid
+- **Memory Hacks & Study Tips** — every section comes with a mnemonic, silly acronym, or vivid
   mental image tied to that specific content, to help tough concepts stick.
 - **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,
   or zoned out during a lecture. Paste notes, upload a PDF, or snap a photo of handwritten
   notes — Study Buddy reads it all.
-- **Accounts & Saved Sessions** — sign up, and every study session (tasks, progress, flashcards)
-  is saved to your private account. Pick up exactly where you left off, or delete sessions you
-  no longer need.
+- **Accounts & Saved Sessions** — sign up, and every study session (notes, breakdown, flashcards)
+  is saved to your private account. Reopen it any time, or delete sessions you no longer need.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
 
 ## Problem It Solves & Impact
 
-**The problem.** For students with ADHD, autism, or other executive-function challenges, the
-hardest part of studying usually isn't understanding the material — it's *starting*. A page
-of undifferentiated notes with no built-in structure causes task paralysis before any actual
-learning happens. Most study apps assume the student can already break work into steps and
-estimate how long each step takes — that's precisely the skill this population struggles with
-most.
+**The problem.** Dense, jargon-heavy class notes are often harder to learn from than the
+subject matter actually deserves — especially for students with ADHD, autism, or other
+executive-function challenges, where an unstructured wall of text causes overwhelm before any
+real learning starts. It's worse if you missed the class entirely: there's no one around to
+re-explain it in simpler terms.
 
-**The fix.** Study Buddy does that planning step automatically: it reads the material and
-hands back an ordered, time-boxed checklist, so "getting started" just means pressing the
-timer on task one. The tutor chat is deliberately narrow — scoped only to the uploaded
-material — so a student who gets stuck gets a short, relevant answer instead of an
-open-ended AI conversation that can become its own distraction.
+**The fix.** Study Buddy reads the material and rewrites it as a numbered, plain-language
+walkthrough — each section names one specific concept and actually explains it, instead of
+just repeating the confusing original wording, paired with a memory aid to help it stick.
+Flashcards and a quiz turn that passive reading into active recall practice, and a tutor chat
+scoped strictly to the uploaded material answers follow-up questions without wandering
+off-topic or inventing things that aren't in your notes.
 
 **Why it matters.** This is a small, concrete accessibility tool, not a general-purpose
 chatbot wrapper. It targets a specific, underserved need — executive-function support for
@@ -55,9 +54,9 @@ tracks are looking for.
 - **Frontend:** React 19 + Vite, plain CSS (calming, low-stimulation color system, respects
   `prefers-reduced-motion` and `prefers-color-scheme`)
 - **Backend:** Node.js + Express
-- **AI:** [Ollama](https://ollama.com) running locally — `llama3.2` for task breakdown and
-  tutor chat, `llava` for transcribing photographed handwritten notes. No API key,
-  no per-request cost, fully offline-capable.
+- **AI:** [Ollama](https://ollama.com) running locally — `llama3.2` for the notes breakdown,
+  flashcards/quiz, and tutor chat, `llava` for transcribing photographed handwritten notes.
+  No API key, no per-request cost, fully offline-capable.
 - **Auth & storage:** `node:sqlite` (Node's built-in SQLite — no native module install) for
   users and saved sessions; passwords hashed with `node:crypto` scrypt; httpOnly cookie
   sessions via `cookie-parser` (no external auth service or JWT library needed)
@@ -87,8 +86,7 @@ study-buddy-agent/
             ├── AuthScreen.jsx
             ├── SessionDashboard.jsx
             ├── UploadScreen.jsx
-            ├── TaskList.jsx
-            ├── FocusTimer.jsx
+            ├── NotesBreakdown.jsx
             ├── FlashcardsQuiz.jsx
             └── TutorChat.jsx
 ```
@@ -98,9 +96,8 @@ Auth uses an httpOnly cookie holding a random session token, checked against the
 signed-in user only ever sees their own sessions (every query is scoped by `user_id`). A study
 session's `sourceText` is stored once at creation and reused for every `/api/chat` and
 `/api/flashcards` call on that session, so the tutor and quiz stay grounded in the student's
-own material. Completed-task progress and generated flashcards are synced back to the
-database in the background as the student works, so closing the tab or refreshing never loses
-progress.
+own material. Generated flashcards are cached back to the database the first time they're
+built, so reopening a session doesn't re-run the AI unless you explicitly regenerate.
 
 ## Installation Instructions
 
