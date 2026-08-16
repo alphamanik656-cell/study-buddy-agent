@@ -509,17 +509,6 @@ button.tab.active {
   margin: 0 auto;
 }
 
-.cards-tabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-
-.cards-tabs .link {
-  margin-left: auto;
-}
-
 .flashcard-wrap {
   display: flex;
   flex-direction: column;
