@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { signIn, signUp, tryGuest } from '../api';
 
-export default function AuthScreen({ onAuthed, onGuestAuthed }) {
+export default function AuthScreen({ onAuthed }) {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +28,7 @@ export default function AuthScreen({ onAuthed, onGuestAuthed }) {
     setError('');
     try {
       const { user } = await tryGuest();
-      onGuestAuthed(user);
+      onAuthed(user);
     } catch (err) {
       setError(err.message);
     } finally {
