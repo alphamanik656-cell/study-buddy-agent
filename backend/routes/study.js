@@ -11,19 +11,41 @@ function extractJson(raw) {
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
   if (start === -1 || end === -1) throw new Error('Model did not return JSON');
-  return JSON.parse(raw.slice(start, end + 1));
+  const slice = raw.slice(start, end + 1);
+
+  try {
+    return JSON.parse(slice);
+  } catch (err) {
+    // Trailing commas before a closing ] or } are the single most common LLM JSON mistake - worth
+    // one repair attempt before giving up and letting the caller retry the whole generation.
+    try {
+      return JSON.parse(slice.replace(/,\s*([\]}])/g, '$1'));
+    } catch {
+      throw err;
+    }
+  }
 }
 
-// Small local models occasionally under-generate (e.g. return 1-2 tasks instead of the requested 5).
-// A couple of automatic retries catch most of those cases without slowing down the common, already-correct case.
+// Small local models occasionally under-generate (e.g. return 1-2 tasks instead of the requested 5)
+// or return outright malformed JSON. A couple of automatic retries catch most of those cases
+// without slowing down the common, already-correct case.
 async function generateJsonWithRetry(prompt, opts, isValid) {
-  let parsed;
+  let parsed = null;
+  let lastError = null;
+
   for (let attempt = 0; attempt < 3; attempt++) {
-    const raw = await generateText(prompt, opts);
-    parsed = extractJson(raw);
-    if (isValid(parsed)) return parsed;
+    try {
+      const raw = await generateText(prompt, opts);
+      const candidate = extractJson(raw);
+      parsed = candidate;
+      if (isValid(candidate)) return candidate;
+    } catch (err) {
+      lastError = err;
+    }
   }
-  return parsed;
+
+  if (parsed) return parsed; // best-effort: parsed but didn't fully satisfy isValid
+  throw lastError || new Error('Model did not return usable JSON after multiple attempts.');
 }
 
 async function extractSourceText(req) {
