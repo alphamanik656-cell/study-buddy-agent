@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import { generateText, generateFromImage } from '../services/ollama.js';
-import { ocrPrompt, breakdownPrompt, flashcardsPrompt, tutorSystemPrompt } from '../services/prompts.js';
+import { ocrPrompt, breakdownPrompt, flashcardsPrompt, quizPrompt, tutorSystemPrompt } from '../services/prompts.js';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
@@ -58,6 +58,39 @@ async function extractSourceText(req) {
   throw err;
 }
 
+// The model's "explanation" is often a near-verbatim copy of the correct choice text, but the
+// "correctIndex" it points to doesn't always match. Where the explanation clearly matches a
+// different choice than the claimed index, trust the text match over the index.
+function normalize(s) {
+  return String(s).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+function fixQuizAnswers(quiz) {
+  if (!Array.isArray(quiz)) return quiz;
+  return quiz.map((q) => {
+    if (!Array.isArray(q.choices)) return q;
+
+    let correctIndex = q.correctIndex;
+
+    if (typeof q.explanation === 'string') {
+      const explNorm = normalize(q.explanation);
+      if (explNorm) {
+        const matchIndex = q.choices.findIndex((c) => {
+          const choiceNorm = normalize(c);
+          return choiceNorm && (explNorm.includes(choiceNorm) || choiceNorm.includes(explNorm));
+        });
+        if (matchIndex !== -1) correctIndex = matchIndex;
+      }
+    }
+
+    // Out-of-range index would render as a blank "correct" answer in the UI - clamp as a last resort.
+    if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= q.choices.length) {
+      correctIndex = 0;
+    }
+
+    return correctIndex === q.correctIndex ? q : { ...q, correctIndex };
+  });
+}
+
 // Small local models occasionally leak the prompt's own instructions into the "topic" field
 // (e.g. "Study coach for ADHD/neurodivergent students") instead of naming the material's subject.
 const LEAKED_TOPIC_PATTERN = /adhd|neurodivergent|study coach|these instructions/i;
@@ -104,8 +137,27 @@ router.post('/flashcards', async (req, res, next) => {
 
     res.json({
       flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
-      quiz: Array.isArray(parsed.quiz) ? parsed.quiz : [],
+      quiz: fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []),
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/quiz', async (req, res, next) => {
+  try {
+    const { sourceText } = req.body;
+    if (!sourceText) {
+      return res.status(400).json({ error: 'sourceText is required.' });
+    }
+
+    const parsed = await generateJsonWithRetry(
+      quizPrompt(sourceText),
+      { json: true, temperature: 0.5 },
+      (p) => Array.isArray(p.quiz) && p.quiz.length >= 2
+    );
+
+    res.json({ quiz: fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []) });
   } catch (err) {
     next(err);
   }

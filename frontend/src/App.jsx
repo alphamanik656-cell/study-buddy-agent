@@ -11,6 +11,7 @@ import {
   getSession,
   requestBreakdown,
   requestFlashcards,
+  requestQuiz,
   signOut,
   updateSession,
 } from './api';
@@ -29,6 +30,9 @@ export default function App() {
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState('');
   const [cardsVersion, setCardsVersion] = useState(0);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizError, setQuizError] = useState('');
+  const [quizVersion, setQuizVersion] = useState(0);
 
   useEffect(() => {
     getCurrentUser()
@@ -85,12 +89,30 @@ export default function App() {
     }
   }
 
+  async function regenerateQuiz() {
+    if (!session) return;
+    setQuizLoading(true);
+    setQuizError('');
+    try {
+      const { quiz } = await requestQuiz({ sourceText: session.sourceText });
+      const next = { ...(cardsData || { flashcards: [] }), quiz };
+      setCardsData(next);
+      setQuizVersion((v) => v + 1);
+      if (session.id) updateSession(session.id, { flashcards: next }).catch(() => {});
+    } catch (err) {
+      setQuizError(err.message);
+    } finally {
+      setQuizLoading(false);
+    }
+  }
+
   function goToDashboard() {
     setSession(null);
     setError('');
     setView('breakdown');
     setCardsData(null);
     setCardsError('');
+    setQuizError('');
     setScreen('dashboard');
   }
 
@@ -171,6 +193,10 @@ export default function App() {
           loading={cardsLoading}
           error={cardsError}
           onRegenerate={() => loadFlashcards(session.sourceText)}
+          quizLoading={quizLoading}
+          quizError={quizError}
+          quizVersion={quizVersion}
+          onRegenerateQuiz={regenerateQuiz}
         />
       )}
     </main>

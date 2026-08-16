@@ -69,6 +69,10 @@ export function requestFlashcards({ sourceText }) {
   return jsonRequest('/flashcards', { sourceText });
 }
 
+export function requestQuiz({ sourceText }) {
+  return jsonRequest('/quiz', { sourceText });
+}
+
 export async function sendChatMessage({ sourceText, history, message }) {
   const { reply } = await jsonRequest('/chat', { sourceText, history, message });
   return reply;

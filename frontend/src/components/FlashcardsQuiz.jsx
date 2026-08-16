@@ -1,6 +1,15 @@
 import { useState } from 'react';
 
-export default function FlashcardsQuiz({ data, loading, error, onRegenerate }) {
+export default function FlashcardsQuiz({
+  data,
+  loading,
+  error,
+  onRegenerate,
+  quizLoading,
+  quizError,
+  onRegenerateQuiz,
+  quizVersion,
+}) {
   const [mode, setMode] = useState('flashcards');
 
   return (
@@ -32,7 +41,17 @@ export default function FlashcardsQuiz({ data, loading, error, onRegenerate }) {
       )}
 
       {!loading && !error && data && (
-        mode === 'flashcards' ? <FlashcardDeck cards={data.flashcards} /> : <Quiz questions={data.quiz} />
+        mode === 'flashcards' ? (
+          <FlashcardDeck cards={data.flashcards} />
+        ) : (
+          <Quiz
+            key={quizVersion}
+            questions={data.quiz}
+            loading={quizLoading}
+            error={quizError}
+            onRegenerate={onRegenerateQuiz}
+          />
+        )
       )}
     </div>
   );
@@ -76,11 +95,24 @@ function FlashcardDeck({ cards }) {
   );
 }
 
-function Quiz({ questions }) {
+function Quiz({ questions, loading, error, onRegenerate }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+
+  if (loading) return <p className="task-summary">Generating new questions…</p>;
+
+  if (error) {
+    return (
+      <>
+        <p className="error">⚠️ {error}</p>
+        <button className="secondary" onClick={onRegenerate}>
+          Retry
+        </button>
+      </>
+    );
+  }
 
   if (!questions.length) return <p className="task-summary">No quiz questions generated — try regenerating.</p>;
 
@@ -90,17 +122,22 @@ function Quiz({ questions }) {
         <p className="finished-message">
           🎉 You scored {score} / {questions.length}
         </p>
-        <button
-          className="primary"
-          onClick={() => {
-            setIndex(0);
-            setSelected(null);
-            setScore(0);
-            setFinished(false);
-          }}
-        >
-          Try again
-        </button>
+        <div className="timer-controls">
+          <button
+            className="secondary"
+            onClick={() => {
+              setIndex(0);
+              setSelected(null);
+              setScore(0);
+              setFinished(false);
+            }}
+          >
+            ↺ Try again
+          </button>
+          <button className="primary" onClick={onRegenerate}>
+            🔄 New questions
+          </button>
+        </div>
       </div>
     );
   }
@@ -124,9 +161,14 @@ function Quiz({ questions }) {
 
   return (
     <div className="quiz-wrap">
-      <span className="progress-label">
-        Question {index + 1} / {questions.length}
-      </span>
+      <div className="quiz-header-row">
+        <span className="progress-label">
+          Question {index + 1} / {questions.length}
+        </span>
+        <button className="link" onClick={onRegenerate}>
+          🔄 New questions
+        </button>
+      </div>
       <p className="quiz-question">{q.question}</p>
 
       <div className="quiz-choices">

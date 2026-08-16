@@ -50,6 +50,23 @@ ${sourceText}
 """`;
 }
 
+export function quizPrompt(sourceText) {
+  return `Study coach building a short practice quiz strictly from the material below.
+
+Multiple-choice questions, each with "question", "choices" (exactly 4 strings), "correctIndex"
+(0-based index of the correct choice — double-check it matches "explanation"), and "explanation"
+(max 1 sentence). The "quiz" array MUST contain exactly 3 items — not fewer, not more.
+
+Stay strictly within the material given. JSON only, no markdown fences, no extra text. The example below
+shows only 1 item but you MUST output 3 — keep going:
+{"quiz":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"..."}, ... 2 more ...]}
+
+MATERIAL:
+"""
+${sourceText}
+"""`;
+}
+
 export function tutorSystemPrompt(sourceText) {
   return `You are a patient, encouraging study tutor helping a neurodivergent student understand their own notes.
 Answer ONLY using the study material below — if the answer isn't in the material, say so plainly rather than

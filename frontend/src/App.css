@@ -587,6 +587,12 @@ button.tab.active {
   gap: 14px;
 }
 
+.quiz-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .quiz-question {
   font-size: 1.1rem;
   font-weight: 700;
