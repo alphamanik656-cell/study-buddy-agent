@@ -49,7 +49,7 @@ router.post('/signup', (req, res) => {
   const info = insertUser.run(normalizedEmail, hash, salt, new Date().toISOString());
 
   issueSession(res, info.lastInsertRowid);
-  res.status(201).json({ user: { id: info.lastInsertRowid, email: normalizedEmail } });
+  res.status(201).json({ user: { id: info.lastInsertRowid, email: normalizedEmail, isGuest: false } });
 });
 
 // Lets someone try the full app - saved sessions included - without creating a real account.
@@ -61,7 +61,7 @@ router.post('/guest', (req, res) => {
   const info = insertUser.run(randomEmail, hash, salt, new Date().toISOString());
 
   issueSession(res, info.lastInsertRowid);
-  res.status(201).json({ user: { id: info.lastInsertRowid, email: 'Guest' } });
+  res.status(201).json({ user: { id: info.lastInsertRowid, email: 'Guest', isGuest: true } });
 });
 
 router.post('/signin', (req, res) => {
@@ -76,7 +76,7 @@ router.post('/signin', (req, res) => {
   }
 
   issueSession(res, user.id);
-  res.json({ user: { id: user.id, email: user.email } });
+  res.json({ user: { id: user.id, email: user.email, isGuest: false } });
 });
 
 router.post('/signout', (req, res) => {
@@ -89,7 +89,7 @@ router.post('/signout', (req, res) => {
 router.get('/me', requireAuth, (req, res) => {
   const user = findUserById.get(req.userId);
   if (!user) return res.status(401).json({ error: 'Not signed in.' });
-  res.json({ user: { ...user, email: displayEmail(user.email) } });
+  res.json({ user: { ...user, email: displayEmail(user.email), isGuest: GUEST_EMAIL_PATTERN.test(user.email) } });
 });
 
 export default router;

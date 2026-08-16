@@ -155,6 +155,7 @@ export default function App() {
         </header>
         <SessionDashboard
           userEmail={user.email}
+          isGuest={user.isGuest}
           onStartNew={() => setScreen('upload')}
           onOpenSession={openSession}
           onOpenAPPractice={() => setScreen('ap')}
