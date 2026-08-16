@@ -181,7 +181,7 @@ export default function App() {
             📇 Flashcards
           </button>
           <button className={`tab ${view === 'quiz' ? 'active' : ''}`} onClick={() => setView('quiz')}>
-            📝 Quiz
+            🎮 Quiz Game
           </button>
         </div>
         <button className="link" onClick={goToDashboard}>

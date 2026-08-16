@@ -17,12 +17,10 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
   instead of just re-showing the original text.
 - **Smart Flashcards** — auto-generated front/back cards to test recall before exam day, with
   an independent regenerate that leaves your quiz untouched.
-- **Quiz, Two Ways** — targeted multiple-choice practice questions (instant feedback,
-  explanations, per-question difficulty badge) generated from your own notes. Pick a difficulty
-  (easy/medium/hard/mixed) and question count (3/5/10), then play it either as a **📝 Practice**
-  quiz with a running score, or as a **⚔️ Boss Battle** — answer correctly to attack a boss,
-  get one wrong and it hits back, with live HP bars for both sides. Same generation engine,
-  two ways to play, switchable in one tab.
+- **Quiz Game** — multiple-choice questions generated from your own notes (instant feedback,
+  explanations, per-question difficulty badge), played as a boss battle: answer correctly to
+  attack the boss, get one wrong and it hits back, with live HP bars for both sides. Pick a
+  difficulty (easy/medium/hard/mixed) and question count (3/5/10) before each fight.
 - **Memory Hacks & Study Tips** — every section comes with a mnemonic, silly acronym, or vivid
   mental image tied to that specific content, to help tough concepts stick.
 - **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,
@@ -96,10 +94,8 @@ study-buddy-agent/
             ├── UploadScreen.jsx
             ├── NotesBreakdown.jsx
             ├── Flashcards.jsx
-            ├── Quiz.jsx           outer tab: Practice/Boss Battle mode switch
-            ├── PracticeQuiz.jsx   plain scored quiz
-            ├── BossBattle.jsx     HP-bar battle version of the same quiz
-            ├── QuizSettings.jsx   shared difficulty/count picker
+            ├── Quiz.jsx           the Quiz Game - HP-bar boss battle
+            ├── QuizSettings.jsx   difficulty/count picker
             └── TutorChat.jsx
 ```
 

@@ -544,12 +544,6 @@ button.tab.active {
   margin: 0 auto;
 }
 
-.mode-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-
 .flashcard-wrap {
   display: flex;
   flex-direction: column;
