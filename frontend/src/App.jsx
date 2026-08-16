@@ -6,6 +6,7 @@ import NotesBreakdown from './components/NotesBreakdown';
 import TutorChat from './components/TutorChat';
 import Flashcards from './components/Flashcards';
 import Quiz from './components/Quiz';
+import Game from './components/Game';
 import {
   createSession,
   getCurrentUser,
@@ -26,7 +27,7 @@ export default function App() {
   const [session, setSession] = useState(null); // { id, topic, sourceText, sections }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [view, setView] = useState('breakdown'); // 'breakdown' | 'flashcards' | 'quiz'
+  const [view, setView] = useState('breakdown'); // 'breakdown' | 'flashcards' | 'quiz' | 'game'
 
   // Initial combined fetch (right after upload / opening a session with no cached flashcards yet)
   const [cardsData, setCardsData] = useState(null);
@@ -201,6 +202,9 @@ export default function App() {
           <button className={`tab ${view === 'quiz' ? 'active' : ''}`} onClick={() => setView('quiz')}>
             📝 Quiz
           </button>
+          <button className={`tab ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')}>
+            🎮 Game
+          </button>
         </div>
         <button className="link" onClick={goToDashboard}>
           📚 My sessions
@@ -235,6 +239,8 @@ export default function App() {
           onRegenerate={regenerateQuiz}
         />
       )}
+
+      {view === 'game' && <Game topic={session.topic} sourceText={session.sourceText} />}
     </main>
   );
 }

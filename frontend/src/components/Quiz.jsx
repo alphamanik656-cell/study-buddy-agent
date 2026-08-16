@@ -1,33 +1,7 @@
 import { useState } from 'react';
+import QuizSettings from './QuizSettings';
 
 const DIFFICULTY_LABEL = { easy: 'easy', medium: 'medium', hard: 'hard' };
-
-function QuizSettings({ difficulty, setDifficulty, count, setCount, onGenerate, disabled }) {
-  return (
-    <div className="quiz-settings">
-      <label className="quiz-settings-field">
-        Difficulty
-        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} disabled={disabled}>
-          <option value="mixed">Mixed</option>
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select>
-      </label>
-      <label className="quiz-settings-field">
-        Questions
-        <select value={count} onChange={(e) => setCount(Number(e.target.value))} disabled={disabled}>
-          <option value={3}>3</option>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-        </select>
-      </label>
-      <button className="secondary" onClick={() => onGenerate(difficulty, count)} disabled={disabled}>
-        🔄 Generate
-      </button>
-    </div>
-  );
-}
 
 export default function Quiz({ questions, loading, error, onRegenerate }) {
   const [index, setIndex] = useState(0);

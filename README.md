@@ -27,6 +27,9 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
   notes — Study Buddy reads it all.
 - **Accounts & Saved Sessions** — sign up, and every study session (notes, breakdown, flashcards)
   is saved to your private account. Reopen it any time, or delete sessions you no longer need.
+- **Boss Battle Game** — a gamified quiz mode: answer questions from your own notes to attack a
+  boss, get one wrong and it hits back. Pick difficulty and question count, watch HP bars drop
+  in real time, then fight again. Turns quiz review into something with actual stakes.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
@@ -74,7 +77,7 @@ study-buddy-agent/
 │   ├── routes/
 │   │   ├── auth.js            POST /api/auth/{signup,signin,signout}, GET /api/auth/me
 │   │   ├── sessions.js        CRUD for saved study sessions (auth-protected)
-│   │   └── study.js           POST /api/breakdown, POST /api/flashcards, POST /api/chat (auth-protected)
+│   │   └── study.js           POST /api/breakdown, /flashcards, /quiz, /chat (auth-protected)
 │   └── services/
 │       ├── db.js              node:sqlite setup (users, auth_tokens, study_sessions tables)
 │       ├── auth.js            password hashing (scrypt) + session token generation
@@ -89,7 +92,10 @@ study-buddy-agent/
             ├── SessionDashboard.jsx
             ├── UploadScreen.jsx
             ├── NotesBreakdown.jsx
-            ├── FlashcardsQuiz.jsx
+            ├── Flashcards.jsx
+            ├── Quiz.jsx
+            ├── QuizSettings.jsx   shared difficulty/count picker (Quiz + Game)
+            ├── Game.jsx           Boss Battle mode
             └── TutorChat.jsx
 ```
 
