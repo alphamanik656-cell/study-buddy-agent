@@ -81,3 +81,11 @@ export async function sendChatMessage({ sourceText, history, message }) {
   const { reply } = await jsonRequest('/chat', { sourceText, history, message });
   return reply;
 }
+
+export function requestAPMcqs({ subject }) {
+  return jsonRequest('/ap/mcq', { subject });
+}
+
+export function requestAPFrqs({ subject }) {
+  return jsonRequest('/ap/frq', { subject });
+}

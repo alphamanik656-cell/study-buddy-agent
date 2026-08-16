@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { deleteSession, listSessions } from '../api';
 
-export default function SessionDashboard({ userEmail, onStartNew, onOpenSession }) {
+export default function SessionDashboard({ userEmail, onStartNew, onOpenSession, onOpenAPPractice }) {
   const [sessions, setSessions] = useState(null);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
@@ -44,9 +44,12 @@ export default function SessionDashboard({ userEmail, onStartNew, onOpenSession 
         </p>
       </div>
 
-      <div className="card upload-card">
+      <div className="card upload-card dashboard-actions">
         <button className="primary big" onClick={onStartNew}>
           ✨ Start a new session
+        </button>
+        <button className="secondary" style={{ width: '100%' }} onClick={onOpenAPPractice}>
+          🎓 AP Practice
         </button>
       </div>
 

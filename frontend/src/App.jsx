@@ -6,6 +6,7 @@ import NotesBreakdown from './components/NotesBreakdown';
 import TutorChat from './components/TutorChat';
 import Flashcards from './components/Flashcards';
 import Quiz from './components/Quiz';
+import APPractice from './components/APPractice';
 import {
   createSession,
   getCurrentUser,
@@ -20,7 +21,7 @@ import './App.css';
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
-  const [screen, setScreen] = useState('dashboard'); // 'dashboard' | 'upload' | 'study'
+  const [screen, setScreen] = useState('dashboard'); // 'dashboard' | 'upload' | 'study' | 'ap'
 
   const [session, setSession] = useState(null); // { id, topic, sourceText, sections }
   const [loading, setLoading] = useState(false);
@@ -146,13 +147,18 @@ export default function App() {
       <main className="app-shell">
         <header className="top-bar">
           <button className="brand" onClick={goToDashboard}>
-          🧠 Study Buddy
-        </button>
+            🧠 Study Buddy
+          </button>
           <button className="link" onClick={handleSignOut}>
             Sign out
           </button>
         </header>
-        <SessionDashboard userEmail={user.email} onStartNew={() => setScreen('upload')} onOpenSession={openSession} />
+        <SessionDashboard
+          userEmail={user.email}
+          onStartNew={() => setScreen('upload')}
+          onOpenSession={openSession}
+          onOpenAPPractice={() => setScreen('ap')}
+        />
       </main>
     );
   }
@@ -162,13 +168,29 @@ export default function App() {
       <main className="app-shell">
         <header className="top-bar">
           <button className="brand" onClick={goToDashboard}>
-          🧠 Study Buddy
-        </button>
+            🧠 Study Buddy
+          </button>
           <button className="link" onClick={goToDashboard}>
             ← My sessions
           </button>
         </header>
         <UploadScreen onSubmit={handleUpload} loading={loading} error={error} />
+      </main>
+    );
+  }
+
+  if (screen === 'ap') {
+    return (
+      <main className="app-shell">
+        <header className="top-bar">
+          <button className="brand" onClick={goToDashboard}>
+            🧠 Study Buddy
+          </button>
+          <button className="link" onClick={goToDashboard}>
+            ← My sessions
+          </button>
+        </header>
+        <APPractice />
       </main>
     );
   }

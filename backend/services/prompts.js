@@ -89,6 +89,43 @@ ${sourceText}
 """`;
 }
 
+export function apMcqPrompt(subject) {
+  return `You are an experienced AP exam question writer. Write exactly 5 multiple-choice questions in the
+style, rigor, and format of the real AP ${subject} exam, drawing from across the official AP ${subject}
+course framework (not just one topic) so the set covers a range of major units.
+
+Each question needs:
+- "question": a realistic AP-style question stem for this subject
+- "choices": exactly 4 answer options as strings, all plausible (no giveaway wording)
+- "correctIndex": 0-based index of the correct choice — double-check it matches "explanation"
+- "explanation": 1-2 sentences on why that answer is correct
+
+The "mcqs" array MUST contain exactly 5 items — not fewer, not more.
+
+JSON only, no markdown fences, no extra text. The example below shows only 1 item but you MUST output 5 —
+keep going, do not stop early:
+{"mcqs":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"..."}, ... 4 more ...]}`;
+}
+
+export function apFrqPrompt(subject) {
+  return `You are an experienced AP exam question writer. Write exactly 2 free-response questions (FRQs) in
+the style, rigor, structure, and length typical of the real AP ${subject} exam.
+
+Each needs:
+- "prompt": the full free-response question text, matching how real AP ${subject} FRQs are phrased and
+  structured (parts labeled (a)/(b)/(c) if that's how this subject's FRQs are normally structured)
+- "rubric": 3-5 short bullet points (as an array of strings) describing exactly what a high-scoring response
+  must include — written the way real AP scoring guidelines describe earning points
+- "sampleResponse": a strong, exemplary answer that would earn full or near-full credit, written the way a
+  well-prepared student would actually answer it (not just a summary of the rubric)
+
+The "frqs" array MUST contain exactly 2 items — not fewer, not more.
+
+JSON only, no markdown fences, no extra text. The example below shows only 1 item but you MUST output 2 —
+keep going:
+{"frqs":[{"prompt":"...","rubric":["...","...","..."],"sampleResponse":"..."}, ... 1 more ...]}`;
+}
+
 export function tutorSystemPrompt(sourceText) {
   return `You are a patient, encouraging study tutor helping a neurodivergent student understand their own notes.
 Answer ONLY using the study material below — if the answer isn't in the material, say so plainly rather than

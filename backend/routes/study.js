@@ -2,7 +2,15 @@ import { Router } from 'express';
 import multer from 'multer';
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import { generateText, generateFromImage } from '../services/ollama.js';
-import { ocrPrompt, breakdownPrompt, flashcardsPrompt, quizPrompt, tutorSystemPrompt } from '../services/prompts.js';
+import {
+  ocrPrompt,
+  breakdownPrompt,
+  flashcardsPrompt,
+  quizPrompt,
+  apMcqPrompt,
+  apFrqPrompt,
+  tutorSystemPrompt,
+} from '../services/prompts.js';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
@@ -78,6 +86,40 @@ async function extractSourceText(req) {
   const err = new Error(`Unsupported file type: ${file.mimetype}`);
   err.status = 400;
   throw err;
+}
+
+// A trailing-comma repair can turn genuinely broken model output into technically-parseable JSON
+// that's still garbage (e.g. a stray string sitting where a question object should be, or a
+// choices array with the wrong length from a truncated/mangled generation). Length checks alone
+// don't catch this - each item's actual shape has to be validated before it's trusted.
+function isWellFormedMcq(item) {
+  return (
+    item &&
+    typeof item.question === 'string' &&
+    item.question.trim().length > 0 &&
+    Array.isArray(item.choices) &&
+    item.choices.length === 4 &&
+    item.choices.every((c) => typeof c === 'string' && c.trim().length > 0)
+  );
+}
+function sanitizeMcqs(items) {
+  return Array.isArray(items) ? items.filter(isWellFormedMcq) : [];
+}
+
+function isWellFormedFrq(item) {
+  return (
+    item &&
+    typeof item.prompt === 'string' &&
+    item.prompt.trim().length > 0 &&
+    Array.isArray(item.rubric) &&
+    item.rubric.length > 0 &&
+    item.rubric.every((r) => typeof r === 'string' && r.trim().length > 0) &&
+    typeof item.sampleResponse === 'string' &&
+    item.sampleResponse.trim().length > 0
+  );
+}
+function sanitizeFrqs(items) {
+  return Array.isArray(items) ? items.filter(isWellFormedFrq) : [];
 }
 
 // The model's "explanation" is often a near-verbatim copy of the correct choice text, but the
@@ -172,12 +214,12 @@ router.post('/flashcards', async (req, res, next) => {
     const parsed = await generateJsonWithRetry(
       flashcardsPrompt(sourceText),
       { json: true, temperature: 0.5 },
-      (p) => Array.isArray(p.flashcards) && p.flashcards.length >= 3 && Array.isArray(p.quiz) && p.quiz.length >= 2
+      (p) => Array.isArray(p.flashcards) && p.flashcards.length >= 3 && sanitizeMcqs(p.quiz).length >= 2
     );
 
     res.json({
       flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
-      quiz: applyRequestedDifficulty(fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []), 'mixed'),
+      quiz: applyRequestedDifficulty(fixQuizAnswers(sanitizeMcqs(parsed.quiz)), 'mixed'),
     });
   } catch (err) {
     next(err);
@@ -197,11 +239,64 @@ router.post('/quiz', async (req, res, next) => {
     const parsed = await generateJsonWithRetry(
       quizPrompt(sourceText, { difficulty, count }),
       { json: true, temperature: 0.5, maxTokens: 120 * count + 200 },
-      (p) => Array.isArray(p.quiz) && p.quiz.length >= count
+      (p) => sanitizeMcqs(p.quiz).length >= count
     );
 
-    const quiz = applyRequestedDifficulty(fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []), difficulty);
+    const quiz = applyRequestedDifficulty(fixQuizAnswers(sanitizeMcqs(parsed.quiz)), difficulty);
     res.json({ quiz });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// AI-generated practice only - never scraped/reproduced from College Board. This whitelist keeps
+// the subject name (interpolated into the prompt) constrained to a known-good, pre-approved list.
+const AP_SUBJECTS = new Set([
+  'AP Biology',
+  'AP Chemistry',
+  'AP Physics 1',
+  'AP Calculus AB',
+  'AP Calculus BC',
+  'AP United States History',
+  'AP World History',
+  'AP Psychology',
+  'AP English Language and Composition',
+  'AP Computer Science A',
+]);
+
+router.post('/ap/mcq', async (req, res, next) => {
+  try {
+    const { subject } = req.body;
+    if (!AP_SUBJECTS.has(subject)) {
+      return res.status(400).json({ error: 'Unknown AP subject.' });
+    }
+
+    const parsed = await generateJsonWithRetry(
+      apMcqPrompt(subject),
+      { json: true, temperature: 0.6, maxTokens: 900 },
+      (p) => sanitizeMcqs(p.mcqs).length >= 4
+    );
+
+    res.json({ mcqs: fixQuizAnswers(sanitizeMcqs(parsed.mcqs)) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/ap/frq', async (req, res, next) => {
+  try {
+    const { subject } = req.body;
+    if (!AP_SUBJECTS.has(subject)) {
+      return res.status(400).json({ error: 'Unknown AP subject.' });
+    }
+
+    const parsed = await generateJsonWithRetry(
+      apFrqPrompt(subject),
+      { json: true, temperature: 0.6, maxTokens: 1300 },
+      (p) => sanitizeFrqs(p.frqs).length >= 1
+    );
+
+    res.json({ frqs: sanitizeFrqs(parsed.frqs) });
   } catch (err) {
     next(err);
   }

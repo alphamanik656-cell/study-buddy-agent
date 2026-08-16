@@ -31,6 +31,12 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 - **Try It Instantly, No Sign-Up** — a one-click guest mode with sample notes (Photosynthesis,
   the Water Cycle, the French Revolution) lets anyone try the full app — breakdown, flashcards,
   quiz, and Boss Battle — in seconds, no account required.
+- **AP Practice** — a standalone tab (no notes upload needed) covering 10 popular AP subjects.
+  Pick a subject and get 5 AI-generated multiple-choice questions plus 2 free-response questions
+  in the style and rigor of the real exam. FRQs include a draft box to write your own answer
+  before revealing a sample response and scoring rubric. Every question is originally generated,
+  never scraped from College Board — each subject also links to College Board's own real,
+  officially-released past exam questions for further practice with the genuine article.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
@@ -78,7 +84,7 @@ study-buddy-agent/
 │   ├── routes/
 │   │   ├── auth.js            POST /api/auth/{signup,signin,signout,guest}, GET /api/auth/me
 │   │   ├── sessions.js        CRUD for saved study sessions (auth-protected)
-│   │   └── study.js           POST /api/breakdown, /flashcards, /quiz, /chat (auth-protected)
+│   │   └── study.js           POST /api/breakdown, /flashcards, /quiz, /ap/mcq, /ap/frq, /chat
 │   └── services/
 │       ├── db.js              node:sqlite setup (users, auth_tokens, study_sessions tables)
 │       ├── auth.js            password hashing (scrypt) + session token generation
@@ -90,10 +96,11 @@ study-buddy-agent/
         ├── api.js             fetch wrappers for the backend (credentialed for cookies)
         └── components/
             ├── AuthScreen.jsx
-            ├── SessionDashboard.jsx
+            ├── SessionDashboard.jsx     start new session, AP Practice, saved sessions
             ├── UploadScreen.jsx
             ├── NotesBreakdown.jsx
             ├── Flashcards.jsx
+            ├── APPractice.jsx     standalone - not tied to a session
             ├── Quiz.jsx           the Quiz Game - HP-bar boss battle
             ├── QuizSettings.jsx   difficulty/count picker
             └── TutorChat.jsx
