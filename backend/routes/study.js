@@ -121,6 +121,19 @@ function sanitizeTopic(topic) {
   return topic;
 }
 
+const QUIZ_DIFFICULTIES = new Set(['easy', 'medium', 'hard', 'mixed']);
+
+// The model doesn't reliably honor "make every question X difficulty" - it writes a mix even when
+// asked for one level throughout. The prompt still steers the actual question content toward the
+// requested difficulty, but the *label* shown to the student must always match what they asked
+// for, so it's enforced here rather than trusting the model's own per-question tagging.
+function applyRequestedDifficulty(quiz, difficulty) {
+  if (difficulty === 'mixed') {
+    return quiz.map((q) => ({ ...q, difficulty: QUIZ_DIFFICULTIES.has(q.difficulty) ? q.difficulty : 'medium' }));
+  }
+  return quiz.map((q) => ({ ...q, difficulty }));
+}
+
 router.post('/breakdown', upload.single('file'), async (req, res, next) => {
   try {
     const sourceText = await extractSourceText(req);
@@ -159,7 +172,7 @@ router.post('/flashcards', async (req, res, next) => {
 
     res.json({
       flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
-      quiz: fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []),
+      quiz: applyRequestedDifficulty(fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []), 'mixed'),
     });
   } catch (err) {
     next(err);
@@ -173,13 +186,17 @@ router.post('/quiz', async (req, res, next) => {
       return res.status(400).json({ error: 'sourceText is required.' });
     }
 
+    const difficulty = QUIZ_DIFFICULTIES.has(req.body.difficulty) ? req.body.difficulty : 'mixed';
+    const count = Math.max(2, Math.min(10, Math.round(Number(req.body.count)) || 3));
+
     const parsed = await generateJsonWithRetry(
-      quizPrompt(sourceText),
-      { json: true, temperature: 0.5 },
-      (p) => Array.isArray(p.quiz) && p.quiz.length >= 2
+      quizPrompt(sourceText, { difficulty, count }),
+      { json: true, temperature: 0.5, maxTokens: 120 * count + 200 },
+      (p) => Array.isArray(p.quiz) && p.quiz.length >= count
     );
 
-    res.json({ quiz: fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []) });
+    const quiz = applyRequestedDifficulty(fixQuizAnswers(Array.isArray(parsed.quiz) ? parsed.quiz : []), difficulty);
+    res.json({ quiz });
   } catch (err) {
     next(err);
   }

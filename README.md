@@ -16,8 +16,10 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
   walkthrough: each section names a specific concept and actually explains it in simple words,
   instead of just re-showing the original text.
 - **Smart Flashcards & Quizzes** — automatically generates custom flashcards and targeted
-  multiple-choice practice questions (with instant feedback and explanations) to test your
-  knowledge before exam day.
+  multiple-choice practice questions (with instant feedback, explanations, and a per-question
+  difficulty badge) to test your knowledge before exam day. Pick a difficulty (easy/medium/hard/
+  mixed) and how many questions (3/5/10), and regenerate just the quiz without touching your
+  flashcards.
 - **Memory Hacks & Study Tips** — every section comes with a mnemonic, silly acronym, or vivid
   mental image tied to that specific content, to help tough concepts stick.
 - **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,

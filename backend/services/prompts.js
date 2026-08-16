@@ -38,11 +38,12 @@ export function flashcardsPrompt(sourceText) {
    The "flashcards" array MUST contain exactly 5 items — not fewer, not more.
 2. "quiz": multiple-choice questions, each with "question", "choices" (exactly 4 strings),
    "correctIndex" (0-based index of the correct choice — double-check it matches "explanation"),
-   and "explanation" (max 1 sentence). The "quiz" array MUST contain exactly 3 items — not fewer, not more.
+   "explanation" (max 1 sentence), and "difficulty" ("easy", "medium", or "hard" — mix a variety across
+   the questions). The "quiz" array MUST contain exactly 3 items — not fewer, not more.
 
 Stay strictly within the material given. JSON only, no markdown fences, no extra text. The example below
 shows only 1 item per array but you MUST output 5 flashcards and 3 quiz questions — keep going:
-{"flashcards":[{"front":"...","back":"..."}, ... 4 more ...],"quiz":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"..."}, ... 2 more ...]}
+{"flashcards":[{"front":"...","back":"..."}, ... 4 more ...],"quiz":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"...","difficulty":"easy"}, ... 2 more ...]}
 
 MATERIAL:
 """
@@ -50,16 +51,34 @@ ${sourceText}
 """`;
 }
 
-export function quizPrompt(sourceText) {
+const QUIZ_DIFFICULTY_INSTRUCTIONS = {
+  easy: 'Every question must be "easy": tests recall of a single clearly-stated fact.',
+  medium:
+    'Every question must be "medium": requires connecting two related facts or explaining a concept in ' +
+    'your own words, not just spotting a fact verbatim.',
+  hard: 'Every question must be "hard": requires reasoning about *why* or *how*, or distinguishing between ' +
+    'similar-sounding concepts in the material — not answerable by simple recall.',
+  mixed: 'Mix a variety of difficulties across the questions: some "easy" (single-fact recall), some ' +
+    '"medium" (connecting facts), some "hard" (reasoning about why/how).',
+};
+
+export function quizPrompt(sourceText, { difficulty = 'mixed', count = 3 } = {}) {
+  const n = Math.max(2, Math.min(10, Math.round(count)));
+  const difficultyInstruction = QUIZ_DIFFICULTY_INSTRUCTIONS[difficulty] || QUIZ_DIFFICULTY_INSTRUCTIONS.mixed;
+
   return `Study coach building a short practice quiz strictly from the material below.
 
+DIFFICULTY REQUIREMENT (read this first, follow it for every single question): ${difficultyInstruction}
+
 Multiple-choice questions, each with "question", "choices" (exactly 4 strings), "correctIndex"
-(0-based index of the correct choice — double-check it matches "explanation"), and "explanation"
-(max 1 sentence). The "quiz" array MUST contain exactly 3 items — not fewer, not more.
+(0-based index of the correct choice — double-check it matches "explanation"), "explanation"
+(max 1 sentence), and "difficulty" ("easy", "medium", or "hard"). Before writing each question, re-read
+the difficulty requirement above and make sure this specific question satisfies it.
+The "quiz" array MUST contain exactly ${n} items — not fewer, not more.
 
 Stay strictly within the material given. JSON only, no markdown fences, no extra text. The example below
-shows only 1 item but you MUST output 3 — keep going:
-{"quiz":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"..."}, ... 2 more ...]}
+shows only 1 item but you MUST output ${n} — keep going:
+{"quiz":[{"question":"...","choices":["...","...","...","..."],"correctIndex":0,"explanation":"...","difficulty":"easy"}, ... ${n - 1} more ...]}
 
 MATERIAL:
 """

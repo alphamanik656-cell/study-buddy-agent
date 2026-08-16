@@ -593,6 +593,66 @@ button.tab.active {
   justify-content: space-between;
 }
 
+.quiz-settings {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.quiz-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.quiz-settings-field select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+
+.difficulty-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.difficulty-easy {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+}
+
+.difficulty-medium {
+  background: var(--accent-soft);
+  color: #a8632a;
+}
+
+.difficulty-hard {
+  background: #fbe3e4;
+  color: var(--danger);
+}
+
 .quiz-question {
   font-size: 1.1rem;
   font-weight: 700;

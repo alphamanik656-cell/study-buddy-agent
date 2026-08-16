@@ -89,12 +89,12 @@ export default function App() {
     }
   }
 
-  async function regenerateQuiz() {
+  async function regenerateQuiz(difficulty, count) {
     if (!session) return;
     setQuizLoading(true);
     setQuizError('');
     try {
-      const { quiz } = await requestQuiz({ sourceText: session.sourceText });
+      const { quiz } = await requestQuiz({ sourceText: session.sourceText, difficulty, count });
       const next = { ...(cardsData || { flashcards: [] }), quiz };
       setCardsData(next);
       setQuizVersion((v) => v + 1);

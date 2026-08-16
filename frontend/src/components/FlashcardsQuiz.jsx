@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const DIFFICULTY_LABEL = { easy: 'easy', medium: 'medium', hard: 'hard' };
+
 export default function FlashcardsQuiz({
   data,
   loading,
@@ -95,11 +97,40 @@ function FlashcardDeck({ cards }) {
   );
 }
 
+function QuizSettings({ difficulty, setDifficulty, count, setCount, onGenerate, disabled }) {
+  return (
+    <div className="quiz-settings">
+      <label className="quiz-settings-field">
+        Difficulty
+        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} disabled={disabled}>
+          <option value="mixed">Mixed</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+      <label className="quiz-settings-field">
+        Questions
+        <select value={count} onChange={(e) => setCount(Number(e.target.value))} disabled={disabled}>
+          <option value={3}>3</option>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+        </select>
+      </label>
+      <button className="secondary" onClick={() => onGenerate(difficulty, count)} disabled={disabled}>
+        🔄 Generate
+      </button>
+    </div>
+  );
+}
+
 function Quiz({ questions, loading, error, onRegenerate }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [difficulty, setDifficulty] = useState('mixed');
+  const [count, setCount] = useState(questions.length || 3);
 
   if (loading) return <p className="task-summary">Generating new questions…</p>;
 
@@ -107,7 +138,7 @@ function Quiz({ questions, loading, error, onRegenerate }) {
     return (
       <>
         <p className="error">⚠️ {error}</p>
-        <button className="secondary" onClick={onRegenerate}>
+        <button className="secondary" onClick={() => onRegenerate(difficulty, count)}>
           Retry
         </button>
       </>
@@ -122,22 +153,24 @@ function Quiz({ questions, loading, error, onRegenerate }) {
         <p className="finished-message">
           🎉 You scored {score} / {questions.length}
         </p>
-        <div className="timer-controls">
-          <button
-            className="secondary"
-            onClick={() => {
-              setIndex(0);
-              setSelected(null);
-              setScore(0);
-              setFinished(false);
-            }}
-          >
-            ↺ Try again
-          </button>
-          <button className="primary" onClick={onRegenerate}>
-            🔄 New questions
-          </button>
-        </div>
+        <button
+          className="secondary"
+          onClick={() => {
+            setIndex(0);
+            setSelected(null);
+            setScore(0);
+            setFinished(false);
+          }}
+        >
+          ↺ Try again
+        </button>
+        <QuizSettings
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          count={count}
+          setCount={setCount}
+          onGenerate={onRegenerate}
+        />
       </div>
     );
   }
@@ -161,13 +194,23 @@ function Quiz({ questions, loading, error, onRegenerate }) {
 
   return (
     <div className="quiz-wrap">
+      <QuizSettings
+        difficulty={difficulty}
+        setDifficulty={setDifficulty}
+        count={count}
+        setCount={setCount}
+        onGenerate={onRegenerate}
+      />
+
       <div className="quiz-header-row">
         <span className="progress-label">
           Question {index + 1} / {questions.length}
         </span>
-        <button className="link" onClick={onRegenerate}>
-          🔄 New questions
-        </button>
+        {q.difficulty && (
+          <span className={`difficulty-badge difficulty-${q.difficulty}`}>
+            {DIFFICULTY_LABEL[q.difficulty] || q.difficulty}
+          </span>
+        )}
       </div>
       <p className="quiz-question">{q.question}</p>
 
