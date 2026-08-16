@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { signIn, signUp } from '../api';
+import { signIn, signUp, tryGuest } from '../api';
 
-export default function AuthScreen({ onAuthed }) {
+export default function AuthScreen({ onAuthed, onGuestAuthed }) {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function handleSubmit(e) {
@@ -19,6 +20,19 @@ export default function AuthScreen({ onAuthed }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGuest() {
+    setGuestLoading(true);
+    setError('');
+    try {
+      const { user } = await tryGuest();
+      onGuestAuthed(user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuestLoading(false);
     }
   }
 
@@ -86,6 +100,20 @@ export default function AuthScreen({ onAuthed }) {
             {mode === 'signup' ? 'Sign in' : 'Sign up'}
           </button>
         </p>
+
+        <div className="divider">
+          <span>or</span>
+        </div>
+
+        <button
+          type="button"
+          className="secondary"
+          style={{ width: '100%' }}
+          onClick={handleGuest}
+          disabled={guestLoading}
+        >
+          {guestLoading ? 'One sec…' : '🎓 Try a sample — no sign-up needed'}
+        </button>
       </div>
     </div>
   );

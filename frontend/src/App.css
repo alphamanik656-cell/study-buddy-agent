@@ -99,6 +99,18 @@
   font-size: 0.95rem;
 }
 
+.sample-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sample-pill {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
 textarea {
   width: 100%;
   padding: 14px;

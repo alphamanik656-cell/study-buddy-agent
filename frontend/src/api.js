@@ -29,6 +29,10 @@ export function signOut() {
   return request('/auth/signout', { method: 'POST' });
 }
 
+export function tryGuest() {
+  return request('/auth/guest', { method: 'POST' });
+}
+
 export function getCurrentUser() {
   return request('/auth/me');
 }

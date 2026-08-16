@@ -30,6 +30,9 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 - **Boss Battle Game** — a gamified quiz mode: answer questions from your own notes to attack a
   boss, get one wrong and it hits back. Pick difficulty and question count, watch HP bars drop
   in real time, then fight again. Turns quiz review into something with actual stakes.
+- **Try It Instantly, No Sign-Up** — a one-click guest mode with sample notes (Photosynthesis,
+  the Water Cycle, the French Revolution) lets anyone try the full app — breakdown, flashcards,
+  quiz, and Boss Battle — in seconds, no account required.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
@@ -75,7 +78,7 @@ study-buddy-agent/
 │   ├── server.js              Express app entrypoint
 │   ├── middleware/requireAuth.js   cookie session -> req.userId, 401 otherwise
 │   ├── routes/
-│   │   ├── auth.js            POST /api/auth/{signup,signin,signout}, GET /api/auth/me
+│   │   ├── auth.js            POST /api/auth/{signup,signin,signout,guest}, GET /api/auth/me
 │   │   ├── sessions.js        CRUD for saved study sessions (auth-protected)
 │   │   └── study.js           POST /api/breakdown, /flashcards, /quiz, /chat (auth-protected)
 │   └── services/
@@ -129,10 +132,12 @@ cp .env.example .env
 npm run dev         # starts on http://localhost:5173
 ```
 
-Open http://localhost:5173, sign up with any email/password (8+ characters — stored locally
-in `backend/data.sqlite`, created automatically on first run), then start a new session: paste
-some notes (or upload a PDF/image/txt file) and click "Break it down for me." Past sessions
-are listed on the dashboard after you sign back in, and can be reopened or deleted.
+Open http://localhost:5173. Click **"🎓 Try a sample — no sign-up needed"** to try the full app
+instantly with pre-loaded sample notes, or sign up with any email/password (8+ characters —
+stored locally in `backend/data.sqlite`, created automatically on first run) to save sessions
+under a real account. Either way: start a new session, paste notes (or upload a PDF/image/txt
+file — or pick a sample topic right on the upload screen) and click "Break it down for me."
+Past sessions are listed on the dashboard after you sign back in, and can be reopened or deleted.
 
 ## Team
 

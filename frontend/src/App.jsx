@@ -155,7 +155,13 @@ export default function App() {
   if (!user) {
     return (
       <main className="app-shell">
-        <AuthScreen onAuthed={setUser} />
+        <AuthScreen
+          onAuthed={setUser}
+          onGuestAuthed={(guestUser) => {
+            setUser(guestUser);
+            setScreen('upload'); // skip the (empty) dashboard - straight to trying the app
+          }}
+        />
       </main>
     );
   }

@@ -26,6 +26,11 @@ function issueSession(res, userId) {
   res.cookie('session_token', token, COOKIE_OPTS);
 }
 
+const GUEST_EMAIL_PATTERN = /^guest-[0-9a-f]+@studybuddy\.local$/;
+function displayEmail(email) {
+  return GUEST_EMAIL_PATTERN.test(email) ? 'Guest' : email;
+}
+
 router.post('/signup', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -45,6 +50,18 @@ router.post('/signup', (req, res) => {
 
   issueSession(res, info.lastInsertRowid);
   res.status(201).json({ user: { id: info.lastInsertRowid, email: normalizedEmail } });
+});
+
+// Lets someone try the full app - saved sessions included - without creating a real account.
+// Under the hood it's just a normal user row with a random, never-shown email/password, so every
+// other route (breakdown, flashcards, quiz, chat, sessions) works completely unchanged.
+router.post('/guest', (req, res) => {
+  const randomEmail = `guest-${generateToken().slice(0, 16)}@studybuddy.local`;
+  const { hash, salt } = hashPassword(generateToken());
+  const info = insertUser.run(randomEmail, hash, salt, new Date().toISOString());
+
+  issueSession(res, info.lastInsertRowid);
+  res.status(201).json({ user: { id: info.lastInsertRowid, email: 'Guest' } });
 });
 
 router.post('/signin', (req, res) => {
@@ -72,7 +89,7 @@ router.post('/signout', (req, res) => {
 router.get('/me', requireAuth, (req, res) => {
   const user = findUserById.get(req.userId);
   if (!user) return res.status(401).json({ error: 'Not signed in.' });
-  res.json({ user });
+  res.json({ user: { ...user, email: displayEmail(user.email) } });
 });
 
 export default router;
