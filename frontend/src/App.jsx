@@ -6,14 +6,12 @@ import NotesBreakdown from './components/NotesBreakdown';
 import TutorChat from './components/TutorChat';
 import Flashcards from './components/Flashcards';
 import Quiz from './components/Quiz';
-import Game from './components/Game';
 import {
   createSession,
   getCurrentUser,
   getSession,
   requestBreakdown,
   requestFlashcards,
-  requestQuiz,
   signOut,
   updateSession,
 } from './api';
@@ -27,22 +25,17 @@ export default function App() {
   const [session, setSession] = useState(null); // { id, topic, sourceText, sections }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [view, setView] = useState('breakdown'); // 'breakdown' | 'flashcards' | 'quiz' | 'game'
+  const [view, setView] = useState('breakdown'); // 'breakdown' | 'flashcards' | 'quiz'
 
   // Initial combined fetch (right after upload / opening a session with no cached flashcards yet)
   const [cardsData, setCardsData] = useState(null);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState('');
 
-  // Flashcards-only regenerate (leaves quiz untouched)
+  // Flashcards-only regenerate
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
   const [flashcardsError, setFlashcardsError] = useState('');
   const [flashcardsVersion, setFlashcardsVersion] = useState(0);
-
-  // Quiz-only regenerate (leaves flashcards untouched)
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [quizError, setQuizError] = useState('');
-  const [quizVersion, setQuizVersion] = useState(0);
 
   useEffect(() => {
     getCurrentUser()
@@ -114,23 +107,6 @@ export default function App() {
     }
   }
 
-  async function regenerateQuiz(difficulty, count) {
-    if (!session) return;
-    setQuizLoading(true);
-    setQuizError('');
-    try {
-      const { quiz } = await requestQuiz({ sourceText: session.sourceText, difficulty, count });
-      const next = { ...(cardsData || { flashcards: [] }), quiz };
-      setCardsData(next);
-      setQuizVersion((v) => v + 1);
-      if (session.id) updateSession(session.id, { flashcards: next }).catch(() => {});
-    } catch (err) {
-      setQuizError(err.message);
-    } finally {
-      setQuizLoading(false);
-    }
-  }
-
   function goToDashboard() {
     setSession(null);
     setError('');
@@ -138,7 +114,6 @@ export default function App() {
     setCardsData(null);
     setCardsError('');
     setFlashcardsError('');
-    setQuizError('');
     setScreen('dashboard');
   }
 
@@ -208,9 +183,6 @@ export default function App() {
           <button className={`tab ${view === 'quiz' ? 'active' : ''}`} onClick={() => setView('quiz')}>
             📝 Quiz
           </button>
-          <button className={`tab ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')}>
-            🎮 Game
-          </button>
         </div>
         <button className="link" onClick={goToDashboard}>
           📚 My sessions
@@ -236,17 +208,7 @@ export default function App() {
         />
       )}
 
-      {view === 'quiz' && (
-        <Quiz
-          key={quizVersion}
-          questions={cardsData?.quiz ?? []}
-          loading={cardsLoading || quizLoading}
-          error={cardsError || quizError}
-          onRegenerate={regenerateQuiz}
-        />
-      )}
-
-      {view === 'game' && <Game topic={session.topic} sourceText={session.sourceText} />}
+      {view === 'quiz' && <Quiz topic={session.topic} sourceText={session.sourceText} />}
     </main>
   );
 }

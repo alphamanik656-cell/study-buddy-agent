@@ -15,11 +15,14 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 - **Instant Concept Breakdown** — turns dense, confusing notes into a numbered, plain-language
   walkthrough: each section names a specific concept and actually explains it in simple words,
   instead of just re-showing the original text.
-- **Smart Flashcards & Quizzes** — automatically generates custom flashcards and targeted
-  multiple-choice practice questions (with instant feedback, explanations, and a per-question
-  difficulty badge) to test your knowledge before exam day. Pick a difficulty (easy/medium/hard/
-  mixed) and how many questions (3/5/10), and regenerate just the quiz without touching your
-  flashcards.
+- **Smart Flashcards** — auto-generated front/back cards to test recall before exam day, with
+  an independent regenerate that leaves your quiz untouched.
+- **Quiz, Two Ways** — targeted multiple-choice practice questions (instant feedback,
+  explanations, per-question difficulty badge) generated from your own notes. Pick a difficulty
+  (easy/medium/hard/mixed) and question count (3/5/10), then play it either as a **📝 Practice**
+  quiz with a running score, or as a **⚔️ Boss Battle** — answer correctly to attack a boss,
+  get one wrong and it hits back, with live HP bars for both sides. Same generation engine,
+  two ways to play, switchable in one tab.
 - **Memory Hacks & Study Tips** — every section comes with a mnemonic, silly acronym, or vivid
   mental image tied to that specific content, to help tough concepts stick.
 - **Absence Recovery** — perfect for filling in the blanks if you missed class, fell behind,
@@ -27,9 +30,6 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
   notes — Study Buddy reads it all.
 - **Accounts & Saved Sessions** — sign up, and every study session (notes, breakdown, flashcards)
   is saved to your private account. Reopen it any time, or delete sessions you no longer need.
-- **Boss Battle Game** — a gamified quiz mode: answer questions from your own notes to attack a
-  boss, get one wrong and it hits back. Pick difficulty and question count, watch HP bars drop
-  in real time, then fight again. Turns quiz review into something with actual stakes.
 - **Try It Instantly, No Sign-Up** — a one-click guest mode with sample notes (Photosynthesis,
   the Water Cycle, the French Revolution) lets anyone try the full app — breakdown, flashcards,
   quiz, and Boss Battle — in seconds, no account required.
@@ -96,9 +96,10 @@ study-buddy-agent/
             ├── UploadScreen.jsx
             ├── NotesBreakdown.jsx
             ├── Flashcards.jsx
-            ├── Quiz.jsx
-            ├── QuizSettings.jsx   shared difficulty/count picker (Quiz + Game)
-            ├── Game.jsx           Boss Battle mode
+            ├── Quiz.jsx           outer tab: Practice/Boss Battle mode switch
+            ├── PracticeQuiz.jsx   plain scored quiz
+            ├── BossBattle.jsx     HP-bar battle version of the same quiz
+            ├── QuizSettings.jsx   shared difficulty/count picker
             └── TutorChat.jsx
 ```
 

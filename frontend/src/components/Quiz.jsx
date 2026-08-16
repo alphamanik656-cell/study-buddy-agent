@@ -1,132 +1,25 @@
 import { useState } from 'react';
-import QuizSettings from './QuizSettings';
+import PracticeQuiz from './PracticeQuiz';
+import BossBattle from './BossBattle';
 
-const DIFFICULTY_LABEL = { easy: 'easy', medium: 'medium', hard: 'hard' };
-
-export default function Quiz({ questions, loading, error, onRegenerate }) {
-  const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
-  const [difficulty, setDifficulty] = useState('mixed');
-  const [count, setCount] = useState(questions.length || 3);
-
-  const settings = (
-    <QuizSettings
-      difficulty={difficulty}
-      setDifficulty={setDifficulty}
-      count={count}
-      setCount={setCount}
-      onGenerate={onRegenerate}
-      disabled={loading}
-    />
-  );
+export default function Quiz({ topic, sourceText }) {
+  const [mode, setMode] = useState('practice'); // 'practice' | 'battle'
 
   return (
     <div className="card cards-card">
-      <h2 className="breakdown-title">📝 Quiz</h2>
-
-      {loading && <p className="task-summary">Generating questions…</p>}
-
-      {!loading && error && (
-        <>
-          <p className="error">⚠️ {error}</p>
-          <button className="secondary" onClick={() => onRegenerate(difficulty, count)}>
-            Retry
-          </button>
-        </>
-      )}
-
-      {!loading && !error && !questions.length && (
-        <>
-          <p className="task-summary">No quiz questions generated — try regenerating.</p>
-          {settings}
-        </>
-      )}
-
-      {!loading && !error && questions.length > 0 && finished && (
-        <div className="quiz-result">
-          <p className="finished-message">
-            🎉 You scored {score} / {questions.length}
-          </p>
-          <button
-            className="secondary"
-            onClick={() => {
-              setIndex(0);
-              setSelected(null);
-              setScore(0);
-              setFinished(false);
-            }}
-          >
-            ↺ Try again
-          </button>
-          {settings}
-        </div>
-      )}
-
-      {!loading && !error && questions.length > 0 && !finished && (
-        <QuizQuestionView
-          question={questions[index]}
-          index={index}
-          total={questions.length}
-          selected={selected}
-          settings={settings}
-          onChoose={(i) => {
-            if (selected !== null) return;
-            setSelected(i);
-            if (i === questions[index].correctIndex) setScore((s) => s + 1);
-          }}
-          onNext={() => {
-            if (index + 1 >= questions.length) {
-              setFinished(true);
-            } else {
-              setIndex((i) => i + 1);
-              setSelected(null);
-            }
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-function QuizQuestionView({ question: q, index, total, selected, settings, onChoose, onNext }) {
-  return (
-    <div className="quiz-wrap">
-      {settings}
-
-      <div className="quiz-header-row">
-        <span className="progress-label">
-          Question {index + 1} / {total}
-        </span>
-        {q.difficulty && (
-          <span className={`difficulty-badge difficulty-${q.difficulty}`}>
-            {DIFFICULTY_LABEL[q.difficulty] || q.difficulty}
-          </span>
-        )}
-      </div>
-      <p className="quiz-question">{q.question}</p>
-
-      <div className="quiz-choices">
-        {q.choices.map((choice, i) => {
-          let cls = 'quiz-choice';
-          if (selected !== null && i === q.correctIndex) cls += ' correct';
-          else if (selected === i) cls += ' incorrect';
-          return (
-            <button key={i} className={cls} onClick={() => onChoose(i)} disabled={selected !== null}>
-              {choice}
-            </button>
-          );
-        })}
+      <div className="mode-tabs">
+        <button className={`tab ${mode === 'practice' ? 'active' : ''}`} onClick={() => setMode('practice')}>
+          📝 Practice
+        </button>
+        <button className={`tab ${mode === 'battle' ? 'active' : ''}`} onClick={() => setMode('battle')}>
+          ⚔️ Boss Battle
+        </button>
       </div>
 
-      {selected !== null && (
-        <>
-          <p className="quiz-explanation">💬 {q.explanation}</p>
-          <button className="primary" onClick={onNext}>
-            {index + 1 >= total ? 'See score' : 'Next question'}
-          </button>
-        </>
+      {mode === 'practice' ? (
+        <PracticeQuiz sourceText={sourceText} />
+      ) : (
+        <BossBattle topic={topic} sourceText={sourceText} />
       )}
     </div>
   );

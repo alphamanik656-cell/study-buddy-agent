@@ -15,7 +15,7 @@ function pickBossEmoji(topic) {
   return BOSS_EMOJI[seed % BOSS_EMOJI.length];
 }
 
-export default function Game({ topic, sourceText }) {
+export default function BossBattle({ topic, sourceText }) {
   const [phase, setPhase] = useState('settings'); // 'settings' | 'battle' | 'result'
   const [difficulty, setDifficulty] = useState('mixed');
   const [count, setCount] = useState(5);
@@ -83,8 +83,7 @@ export default function Game({ topic, sourceText }) {
 
   if (phase === 'settings') {
     return (
-      <div className="card cards-card game-intro">
-        <h2 className="breakdown-title">🎮 Boss Battle</h2>
+      <div className="game-intro">
         <p className="task-summary">
           Answer questions about your notes to attack {bossEmoji} the boss. Get one wrong and it hits back.
           Defeat it before it defeats you!
@@ -113,8 +112,7 @@ export default function Game({ topic, sourceText }) {
         : "🤝 It's a draw — you both ran out of steam.";
 
     return (
-      <div className="card cards-card game-intro">
-        <h2 className="breakdown-title">🎮 Boss Battle</h2>
+      <div className="game-intro">
         <p className="finished-message">{message}</p>
         <p className="task-summary">
           Final HP — You: {playerHp} · Boss: {bossHp}
@@ -137,7 +135,7 @@ export default function Game({ topic, sourceText }) {
   const playerDefeated = playerHp <= 0;
 
   return (
-    <div className="card cards-card">
+    <div>
       <div className="battle-arena">
         <div className="battle-side">
           <span className="battle-label">{bossEmoji} Boss</span>
