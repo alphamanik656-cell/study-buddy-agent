@@ -21,6 +21,14 @@
   font-weight: 600;
   font-size: 1.3rem;
   color: var(--primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.brand:hover {
+  color: var(--primary-hover);
 }
 
 .view-toggle {

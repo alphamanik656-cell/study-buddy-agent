@@ -145,7 +145,9 @@ export default function App() {
     return (
       <main className="app-shell">
         <header className="top-bar">
-          <span className="brand">🧠 Study Buddy</span>
+          <button className="brand" onClick={goToDashboard}>
+          🧠 Study Buddy
+        </button>
           <button className="link" onClick={handleSignOut}>
             Sign out
           </button>
@@ -159,7 +161,9 @@ export default function App() {
     return (
       <main className="app-shell">
         <header className="top-bar">
-          <span className="brand">🧠 Study Buddy</span>
+          <button className="brand" onClick={goToDashboard}>
+          🧠 Study Buddy
+        </button>
           <button className="link" onClick={goToDashboard}>
             ← My sessions
           </button>
@@ -172,7 +176,9 @@ export default function App() {
   return (
     <main className="app-shell">
       <header className="top-bar">
-        <span className="brand">🧠 Study Buddy</span>
+        <button className="brand" onClick={goToDashboard}>
+          🧠 Study Buddy
+        </button>
         <div className="view-toggle">
           <button className={`tab ${view === 'breakdown' ? 'active' : ''}`} onClick={() => setView('breakdown')}>
             📖 Breakdown
