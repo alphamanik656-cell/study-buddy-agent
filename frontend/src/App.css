@@ -341,10 +341,24 @@ button.tab.active {
 
 .section-item {
   border: 1.5px solid var(--border);
+  border-left: 4px solid var(--primary);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 16px 18px;
   background: var(--bg);
+  box-shadow: var(--shadow-sm);
   counter-increment: section-counter;
+}
+
+.section-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.section-list li.section-item:nth-child(3n+2) {
+  border-left-color: var(--accent);
+}
+
+.section-list li.section-item:nth-child(3n+3) {
+  border-left-color: var(--plum);
 }
 
 .section-heading {
@@ -373,8 +387,17 @@ button.tab.active {
 
 .section-explanation {
   margin: 8px 0 0;
-  color: var(--ink-soft);
-  line-height: 1.6;
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
+.key-term {
+  background: var(--highlight-bg);
+  color: var(--highlight-text);
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-weight: 700;
 }
 
 .task-title {

@@ -15,6 +15,9 @@ Each section needs:
 - "heading": short, names the specific concept this section explains (e.g. "Chlorophyll's role", not "Part 1")
 - "explanation": 2-4 sentences that actually explain this concept in plain, simple words — a real
   explanation a confused student could learn from, not a one-line label and not copied from the source
+- "keyTerms": 2-4 important words or short phrases COPIED EXACTLY (same spelling/capitalization) from within
+  this section's own "explanation" text — the terms most worth a student remembering. Every entry MUST be an
+  exact substring of "explanation", not a paraphrase or a word from elsewhere.
 - "memoryTrick": ONE short, playful memory aid tied to this section's content — an acronym/silly sentence for
   a list of terms, or a vivid one-line mental image if there's no list. Never generic advice. Max 15 words.
 
@@ -23,7 +26,7 @@ description of these instructions.
 
 JSON only, no markdown fences, no extra text. The "sections" array below shows only 2 example items but you
 MUST output 5 — keep going, do not stop early:
-{"topic":"...","sections":[{"heading":"...","explanation":"...","memoryTrick":"..."},{"heading":"...","explanation":"...","memoryTrick":"..."}, ... 3 more sections ...]}
+{"topic":"...","sections":[{"heading":"...","explanation":"...","keyTerms":["...","..."],"memoryTrick":"..."},{"heading":"...","explanation":"...","keyTerms":["...","..."],"memoryTrick":"..."}, ... 3 more sections ...]}
 
 MATERIAL:
 """
