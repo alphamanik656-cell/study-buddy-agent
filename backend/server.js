@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
 
+app.set('trust proxy', 1); // Render sits behind a proxy; needed for correct secure-cookie behavior
 app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(cookieParser());
 app.use(express.json({ limit: '2mb' }));

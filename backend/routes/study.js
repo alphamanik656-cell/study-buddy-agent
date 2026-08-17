@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
-import { generateText, generateFromImage } from '../services/ollama.js';
+import { generateText, generateFromImage } from '../services/ai.js';
 import {
   ocrPrompt,
   breakdownPrompt,
@@ -75,7 +75,7 @@ async function extractSourceText(req) {
 
   if (file.mimetype.startsWith('image/')) {
     const base64 = file.buffer.toString('base64');
-    const transcription = await generateFromImage(ocrPrompt(), base64);
+    const transcription = await generateFromImage(ocrPrompt(), base64, file.mimetype);
     return transcription.trim();
   }
 

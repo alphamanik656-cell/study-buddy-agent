@@ -13,9 +13,14 @@ const findUserById = db.prepare('SELECT id, email FROM users WHERE id = ?');
 const insertToken = db.prepare('INSERT INTO auth_tokens (token, user_id, expires_at) VALUES (?, ?, ?)');
 const deleteToken = db.prepare('DELETE FROM auth_tokens WHERE token = ?');
 
+// In production the frontend (Vercel) and backend (Render) live on different domains, so the
+// cookie must be sameSite:"none" + secure to be sent on cross-site fetch requests. Locally both
+// run on http://localhost, where secure cookies don't work at all, so lax + non-secure is used.
+const IS_PROD = process.env.NODE_ENV === 'production';
 const COOKIE_OPTS = {
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: IS_PROD ? 'none' : 'lax',
+  secure: IS_PROD,
   maxAge: TOKEN_TTL_MS,
 };
 
@@ -82,7 +87,7 @@ router.post('/signin', (req, res) => {
 router.post('/signout', (req, res) => {
   const token = req.cookies?.session_token;
   if (token) deleteToken.run(token);
-  res.clearCookie('session_token');
+  res.clearCookie('session_token', { httpOnly: true, sameSite: COOKIE_OPTS.sameSite, secure: COOKIE_OPTS.secure });
   res.json({ ok: true });
 });
 

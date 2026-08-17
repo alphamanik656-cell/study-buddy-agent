@@ -37,6 +37,6 @@ export function generateText(prompt, opts = {}) {
   });
 }
 
-export function generateFromImage(prompt, base64Image) {
+export function generateFromImage(prompt, base64Image, _mimeType) {
   return generate({ model: VISION_MODEL, prompt, images: [base64Image], maxTokens: 1000 });
 }
