@@ -252,16 +252,57 @@ router.post('/quiz', async (req, res, next) => {
 // AI-generated practice only - never scraped/reproduced from College Board. This whitelist keeps
 // the subject name (interpolated into the prompt) constrained to a known-good, pre-approved list.
 const AP_SUBJECTS = new Set([
-  'AP Biology',
-  'AP Chemistry',
-  'AP Physics 1',
-  'AP Calculus AB',
-  'AP Calculus BC',
+  // Arts
+  'AP 2-D Art and Design',
+  'AP 3-D Art and Design',
+  'AP Drawing',
+  'AP Art History',
+  'AP Music Theory',
+  // English
+  'AP English Language and Composition',
+  'AP English Literature and Composition',
+  // History and Social Sciences
+  'AP African American Studies',
+  'AP Comparative Government and Politics',
+  'AP European History',
+  'AP Human Geography',
+  'AP Macroeconomics',
+  'AP Microeconomics',
+  'AP Psychology',
+  'AP United States Government and Politics',
   'AP United States History',
   'AP World History',
-  'AP Psychology',
-  'AP English Language and Composition',
+  // Math and Computer Science
+  'AP Calculus AB',
+  'AP Calculus BC',
   'AP Computer Science A',
+  'AP Computer Science Principles',
+  'AP Precalculus',
+  'AP Statistics',
+  // Sciences
+  'AP Biology',
+  'AP Chemistry',
+  'AP Environmental Science',
+  'AP Physics 1',
+  'AP Physics 2',
+  'AP Physics C: Electricity and Magnetism',
+  'AP Physics C: Mechanics',
+  // World Languages and Cultures
+  'AP Chinese Language and Culture',
+  'AP French Language and Culture',
+  'AP German Language and Culture',
+  'AP Italian Language and Culture',
+  'AP Japanese Language and Culture',
+  'AP Latin',
+  'AP Spanish Language and Culture',
+  'AP Spanish Literature and Culture',
+  // AP Capstone
+  'AP Research',
+  'AP Seminar',
+  // AP Career Kickstart
+  'AP Business with Personal Finance',
+  'AP Cybersecurity',
+  'AP Networking',
 ]);
 
 router.post('/ap/mcq', async (req, res, next) => {

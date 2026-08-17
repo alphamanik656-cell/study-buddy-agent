@@ -1,21 +1,94 @@
 import { useState } from 'react';
 import { requestAPMcqs, requestAPFrqs } from '../api';
 
-const AP_SUBJECTS = [
-  { name: 'AP Biology', slug: 'ap-biology' },
-  { name: 'AP Chemistry', slug: 'ap-chemistry' },
-  { name: 'AP Physics 1', slug: 'ap-physics-1' },
-  { name: 'AP Calculus AB', slug: 'ap-calculus-ab' },
-  { name: 'AP Calculus BC', slug: 'ap-calculus-bc' },
-  { name: 'AP United States History', slug: 'ap-united-states-history' },
-  { name: 'AP World History', slug: 'ap-world-history' },
-  { name: 'AP Psychology', slug: 'ap-psychology' },
-  { name: 'AP English Language and Composition', slug: 'ap-english-language-and-composition' },
-  { name: 'AP Computer Science A', slug: 'ap-computer-science-a' },
+const AP_SUBJECT_GROUPS = [
+  {
+    category: 'Arts',
+    subjects: [
+      { name: 'AP 2-D Art and Design', slug: 'ap-2-d-art-and-design' },
+      { name: 'AP 3-D Art and Design', slug: 'ap-3-d-art-and-design' },
+      { name: 'AP Drawing', slug: 'ap-drawing' },
+      { name: 'AP Art History', slug: 'ap-art-history' },
+      { name: 'AP Music Theory', slug: 'ap-music-theory' },
+    ],
+  },
+  {
+    category: 'English',
+    subjects: [
+      { name: 'AP English Language and Composition', slug: 'ap-english-language-and-composition' },
+      { name: 'AP English Literature and Composition', slug: 'ap-english-literature-and-composition' },
+    ],
+  },
+  {
+    category: 'History and Social Sciences',
+    subjects: [
+      { name: 'AP African American Studies', slug: 'ap-african-american-studies' },
+      { name: 'AP Comparative Government and Politics', slug: 'ap-comparative-government-and-politics' },
+      { name: 'AP European History', slug: 'ap-european-history' },
+      { name: 'AP Human Geography', slug: 'ap-human-geography' },
+      { name: 'AP Macroeconomics', slug: 'ap-macroeconomics' },
+      { name: 'AP Microeconomics', slug: 'ap-microeconomics' },
+      { name: 'AP Psychology', slug: 'ap-psychology' },
+      { name: 'AP United States Government and Politics', slug: 'ap-united-states-government-and-politics' },
+      { name: 'AP United States History', slug: 'ap-united-states-history' },
+      { name: 'AP World History', slug: 'ap-world-history' },
+    ],
+  },
+  {
+    category: 'Math and Computer Science',
+    subjects: [
+      { name: 'AP Calculus AB', slug: 'ap-calculus-ab' },
+      { name: 'AP Calculus BC', slug: 'ap-calculus-bc' },
+      { name: 'AP Computer Science A', slug: 'ap-computer-science-a' },
+      { name: 'AP Computer Science Principles', slug: 'ap-computer-science-principles' },
+      { name: 'AP Precalculus', slug: 'ap-precalculus' },
+      { name: 'AP Statistics', slug: 'ap-statistics' },
+    ],
+  },
+  {
+    category: 'Sciences',
+    subjects: [
+      { name: 'AP Biology', slug: 'ap-biology' },
+      { name: 'AP Chemistry', slug: 'ap-chemistry' },
+      { name: 'AP Environmental Science', slug: 'ap-environmental-science' },
+      { name: 'AP Physics 1', slug: 'ap-physics-1' },
+      { name: 'AP Physics 2', slug: 'ap-physics-2' },
+      { name: 'AP Physics C: Electricity and Magnetism', slug: 'ap-physics-c-electricity-and-magnetism' },
+      { name: 'AP Physics C: Mechanics', slug: 'ap-physics-c-mechanics' },
+    ],
+  },
+  {
+    category: 'World Languages and Cultures',
+    subjects: [
+      { name: 'AP Chinese Language and Culture', slug: 'ap-chinese-language-and-culture' },
+      { name: 'AP French Language and Culture', slug: 'ap-french-language-and-culture' },
+      { name: 'AP German Language and Culture', slug: 'ap-german-language-and-culture' },
+      { name: 'AP Italian Language and Culture', slug: 'ap-italian-language-and-culture' },
+      { name: 'AP Japanese Language and Culture', slug: 'ap-japanese-language-and-culture' },
+      { name: 'AP Latin', slug: 'ap-latin' },
+      { name: 'AP Spanish Language and Culture', slug: 'ap-spanish-language-and-culture' },
+      { name: 'AP Spanish Literature and Culture', slug: 'ap-spanish-literature-and-culture' },
+    ],
+  },
+  {
+    category: 'AP Capstone',
+    subjects: [
+      { name: 'AP Research', slug: 'ap-research' },
+      { name: 'AP Seminar', slug: 'ap-seminar' },
+    ],
+  },
+  {
+    category: 'AP Career Kickstart',
+    subjects: [
+      { name: 'AP Business with Personal Finance', slug: 'ap-business-personal-finance' },
+      { name: 'AP Cybersecurity', slug: 'ap-cybersecurity' },
+      { name: 'AP Networking', slug: 'ap-networking' },
+    ],
+  },
 ];
 
 function collegeBoardLink(slug) {
-  return `https://apcentral.collegeboard.org/courses/${slug}/exam/past-exam-questions`;
+  return `https://apcentral.collegeboard.org/courses/${slug}`;
 }
 
 export default function APPractice() {
@@ -65,25 +138,30 @@ export default function APPractice() {
 
   if (!subject) {
     return (
-      <div className="card cards-card">
+      <div className="card cards-card ap-picker-card">
         <h2 className="breakdown-title">🎓 AP Practice</h2>
         <p className="task-summary">
           Pick a subject for AI-generated practice questions in the style of the real exam — original
           questions, never copied from College Board. Each subject links to College Board's own real
-          released questions for further practice.
+          course page for further practice with the genuine released questions.
         </p>
-        <div className="ap-subject-grid">
-          {AP_SUBJECTS.map((subj) => (
-            <button
-              key={subj.name}
-              type="button"
-              className="secondary ap-subject-btn"
-              onClick={() => chooseSubject(subj)}
-            >
-              {subj.name}
-            </button>
-          ))}
-        </div>
+        {AP_SUBJECT_GROUPS.map((group) => (
+          <div key={group.category} className="ap-subject-group">
+            <h3 className="ap-section-title ap-category-title">{group.category}</h3>
+            <div className="ap-subject-grid">
+              {group.subjects.map((subj) => (
+                <button
+                  key={subj.name}
+                  type="button"
+                  className="secondary ap-subject-btn"
+                  onClick={() => chooseSubject(subj)}
+                >
+                  {subj.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -97,7 +175,7 @@ export default function APPractice() {
         </button>
       </div>
       <a className="ap-cb-link" href={collegeBoardLink(subject.slug)} target="_blank" rel="noopener noreferrer">
-        🔗 Practice with College Board's real released questions
+        🔗 View this course on College Board's AP Central (real released questions available there)
       </a>
 
       <h3 className="ap-section-title">📝 Multiple Choice</h3>

@@ -911,6 +911,31 @@ button.tab.active {
 
 /* ---------- AP Practice ---------- */
 
+.ap-picker-card {
+  max-width: 900px;
+}
+
+.ap-subject-group {
+  margin-top: 8px;
+}
+
+.ap-section-title.ap-category-title {
+  margin: 22px 0 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ap-subject-group:first-of-type .ap-section-title.ap-category-title {
+  margin-top: 18px;
+  padding-top: 0;
+  border-top: none;
+}
+
 .ap-subject-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

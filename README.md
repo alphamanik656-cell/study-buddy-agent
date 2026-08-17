@@ -31,12 +31,14 @@ upload your teacher's notes, slides, or syllabus, and let Study Buddy do the hea
 - **Try It Instantly, No Sign-Up** — a one-click guest mode with sample notes (Photosynthesis,
   the Water Cycle, the French Revolution) lets anyone try the full app — breakdown, flashcards,
   quiz, and Boss Battle — in seconds, no account required.
-- **AP Practice** — a standalone tab (no notes upload needed) covering 10 popular AP subjects.
-  Pick a subject and get 5 AI-generated multiple-choice questions plus 2 free-response questions
-  in the style and rigor of the real exam. FRQs include a draft box to write your own answer
-  before revealing a sample response and scoring rubric. Every question is originally generated,
-  never scraped from College Board — each subject also links to College Board's own real,
-  officially-released past exam questions for further practice with the genuine article.
+- **AP Practice** — a standalone tab (no notes upload needed) covering all 43 official College
+  Board AP subjects, grouped by category (Arts, English, History & Social Sciences, Math & CS,
+  Sciences, World Languages, AP Capstone, AP Career Kickstart). Pick a subject and get 5
+  AI-generated multiple-choice questions plus 2 free-response questions in the style and rigor
+  of the real exam. FRQs include a draft box to write your own answer before revealing a sample
+  response and scoring rubric. Every question is originally generated, never scraped from
+  College Board — each subject also links to its real, official College Board course page for
+  further practice with the genuine article.
 
 Whether you're prepping for a final, catching up after a sick day, or just need a second
 explanation, Study Buddy ensures you never fall behind.
