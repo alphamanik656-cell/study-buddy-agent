@@ -68,9 +68,11 @@ tracks are looking for.
 - **Frontend:** React 19 + Vite, plain CSS (calming, low-stimulation color system, respects
   `prefers-reduced-motion` and `prefers-color-scheme`)
 - **Backend:** Node.js + Express
-- **AI:** [Ollama](https://ollama.com) running locally — `llama3.2` for the notes breakdown,
-  flashcards/quiz, and tutor chat, `llava` for transcribing photographed handwritten notes.
-  No API key, no per-request cost, fully offline-capable.
+- **AI:** [Ollama](https://ollama.com) running locally in dev — `llama3.2` for the notes
+  breakdown, flashcards/quiz, and tutor chat, `llava` for transcribing photographed handwritten
+  notes. No API key, no per-request cost, fully offline-capable. The live deployment swaps to
+  [Groq's](https://groq.com) free hosted API (`openai/gpt-oss-120b` for text, `qwen/qwen3.6-27b`
+  for vision) via an `AI_PROVIDER` env var, since the deployed backend can't reach a local model.
 - **Auth & storage:** `node:sqlite` (Node's built-in SQLite — no native module install) for
   users and saved sessions; passwords hashed with `node:crypto` scrypt; httpOnly cookie
   sessions via `cookie-parser` (no external auth service or JWT library needed)
@@ -151,4 +153,17 @@ Past sessions are listed on the dashboard after you sign back in, and can be reo
 
 ## Demo Video / Screenshots / Live Demo
 
-_Add links here before submitting to Devpost._
+**Live app:** https://frontend-lac-rho-74.vercel.app
+
+The live deployment runs on [Groq's](https://groq.com) free hosted API (an OpenAI-compatible
+endpoint serving open models) instead of local Ollama, since a deployed backend can't reach a
+model running on someone's own machine. Everything — the notes breakdown, memory tricks,
+flashcards, Quiz Game, tutor chat, and AP Practice — works the same way live as it does locally.
+
+Frontend is hosted on Vercel; backend on Render's free tier (spins down after ~15 minutes of
+inactivity — the first request after a gap may take 30-60 seconds to wake it back up). The
+backend's SQLite file lives on Render's ephemeral filesystem, so saved accounts and sessions
+persist during normal use but may reset on a redeploy or after a long idle period; the guest
+"Try a sample" flow and all AI features are unaffected by this and always work.
+
+_Add a demo video link here before submitting to Devpost._
