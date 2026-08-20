@@ -175,7 +175,7 @@ export default function APPractice() {
         </button>
       </div>
       <a className="ap-cb-link" href={collegeBoardLink(subject.slug)} target="_blank" rel="noopener noreferrer">
-        🔗 View this course on College Board's AP Central (real released questions available there)
+        🔗 The content of this course is based on College Board's AP Central
       </a>
 
       <h3 className="ap-section-title">📝 Multiple Choice</h3>
