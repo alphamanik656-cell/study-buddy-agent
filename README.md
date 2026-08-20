@@ -174,5 +174,6 @@ _Add a demo video link here before submitting to Devpost._
 |---|---|
 | ![Boss battle quiz](screenshots/05-quiz-boss-battle.png) Quiz Game — boss battle in progress | ![Notes breakdown](screenshots/03-notes-breakdown.png) Notes breakdown with highlighted key terms + memory tricks |
 | ![Flashcards](screenshots/04-flashcards.png) Flashcards | ![Tutor chat](screenshots/07-tutor-chat.png) Tutor chat, scoped to your notes |
-| ![AP Practice subject picker](screenshots/08-ap-practice-picker.png) AP Practice — all 43 subjects | ![AP Practice questions](screenshots/09-ap-practice-questions.png) AP Practice — generated MCQs & FRQs |
-| ![Dashboard](screenshots/01-dashboard.png) Dashboard | ![Upload screen](screenshots/02-upload.png) Upload screen with sample topics |
+| ![AP Practice subject picker](screenshots/08-ap-practice-picker.png) AP Practice — all 43 subjects | ![AP Practice questions](screenshots/09-ap-practice-questions.png) AP Practice — Biology MCQs & FRQs |
+| ![AP Computer Science A](screenshots/11-ap-computer-science.png) AP Practice — Computer Science A | ![Signed-in dashboard](screenshots/10-dashboard-signed-in.png) Signed-in dashboard with a saved session |
+| ![Dashboard](screenshots/01-dashboard.png) Guest dashboard | ![Upload screen](screenshots/02-upload.png) Upload screen with sample topics |
