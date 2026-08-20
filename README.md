@@ -167,3 +167,12 @@ persist during normal use but may reset on a redeploy or after a long idle perio
 "Try a sample" flow and all AI features are unaffected by this and always work.
 
 _Add a demo video link here before submitting to Devpost._
+
+### Screenshots
+
+| | |
+|---|---|
+| ![Boss battle quiz](screenshots/05-quiz-boss-battle.png) Quiz Game — boss battle in progress | ![Notes breakdown](screenshots/03-notes-breakdown.png) Notes breakdown with highlighted key terms + memory tricks |
+| ![Flashcards](screenshots/04-flashcards.png) Flashcards | ![Tutor chat](screenshots/07-tutor-chat.png) Tutor chat, scoped to your notes |
+| ![AP Practice subject picker](screenshots/08-ap-practice-picker.png) AP Practice — all 43 subjects | ![AP Practice questions](screenshots/09-ap-practice-questions.png) AP Practice — generated MCQs & FRQs |
+| ![Dashboard](screenshots/01-dashboard.png) Dashboard | ![Upload screen](screenshots/02-upload.png) Upload screen with sample topics |
