@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { requestAPMcqs, requestAPFrqs } from '../api';
+import { requestAPMcqs, requestAPFrqs, requestFrqGrade } from '../api';
 
 const AP_SUBJECT_GROUPS = [
   {
@@ -215,7 +215,7 @@ export default function APPractice() {
         <>
           <div className="ap-item-list">
             {frqs.map((f, i) => (
-              <APFrqItem key={frqVersion + '-' + i} frq={f} index={i} />
+              <APFrqItem key={frqVersion + '-' + i} frq={f} index={i} subject={subject.name} />
             ))}
           </div>
           <button className="secondary" onClick={() => loadFrqs(subject)}>
@@ -257,9 +257,31 @@ function APMcqItem({ question: q, index }) {
   );
 }
 
-function APFrqItem({ frq, index }) {
+function APFrqItem({ frq, index, subject }) {
   const [draft, setDraft] = useState('');
   const [revealed, setRevealed] = useState(false);
+  const [grading, setGrading] = useState(false);
+  const [gradeError, setGradeError] = useState('');
+  const [grade, setGrade] = useState(null);
+
+  async function handleGrade() {
+    if (!draft.trim() || grading) return;
+    setGrading(true);
+    setGradeError('');
+    try {
+      const result = await requestFrqGrade({
+        subject,
+        prompt: frq.prompt,
+        rubric: frq.rubric,
+        response: draft,
+      });
+      setGrade(result);
+    } catch (err) {
+      setGradeError(err.message);
+    } finally {
+      setGrading(false);
+    }
+  }
 
   return (
     <div className="ap-item">
@@ -268,14 +290,42 @@ function APFrqItem({ frq, index }) {
       </p>
       <textarea
         className="ap-frq-draft"
-        placeholder="Draft your response here — this stays local, nothing is submitted or graded automatically."
+        placeholder="Draft your response here — nothing is submitted anywhere unless you click Grade my response."
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         rows={6}
       />
-      <button className="secondary" onClick={() => setRevealed((r) => !r)}>
-        {revealed ? 'Hide sample response & rubric' : '👁 Show sample response & rubric'}
-      </button>
+      <div className="ap-frq-actions">
+        <button className="primary" onClick={handleGrade} disabled={!draft.trim() || grading}>
+          {grading ? 'Grading…' : '✅ Grade my response'}
+        </button>
+        <button className="secondary" onClick={() => setRevealed((r) => !r)}>
+          {revealed ? 'Hide sample response & rubric' : '👁 Show sample response & rubric'}
+        </button>
+      </div>
+
+      {gradeError && <p className="error">⚠️ {gradeError}</p>}
+
+      {grade && (
+        <div className="ap-frq-grade">
+          <p className="ap-frq-grade-score">
+            {grade.earnedPoints} / {grade.totalPoints} points
+          </p>
+          <p className="ap-frq-grade-feedback">{grade.overallFeedback}</p>
+          <ul className="ap-frq-grade-list">
+            {grade.rubricResults.map((r, i) => (
+              <li key={i} className={r.earned ? 'earned' : 'missed'}>
+                <span className="ap-frq-grade-icon">{r.earned ? '✓' : '✗'}</span>
+                <span>
+                  <span className="ap-frq-grade-point">{r.point}</span>
+                  {r.note && <span className="ap-frq-grade-note"> — {r.note}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {revealed && (
         <div className="ap-frq-reveal">
           <p className="ap-frq-reveal-label">Scoring rubric</p>

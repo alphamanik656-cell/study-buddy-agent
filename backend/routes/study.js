@@ -9,6 +9,7 @@ import {
   quizPrompt,
   apMcqPrompt,
   apFrqPrompt,
+  apFrqGradePrompt,
   tutorSystemPrompt,
 } from '../services/prompts.js';
 
@@ -120,6 +121,21 @@ function isWellFormedFrq(item) {
 }
 function sanitizeFrqs(items) {
   return Array.isArray(items) ? items.filter(isWellFormedFrq) : [];
+}
+
+function toBool(v) {
+  if (typeof v === 'boolean') return v;
+  if (typeof v === 'string') return v.trim().toLowerCase() === 'true';
+  return false;
+}
+
+function isWellFormedGrade(item, expectedLength) {
+  return (
+    item &&
+    Array.isArray(item.rubricResults) &&
+    item.rubricResults.length === expectedLength &&
+    item.rubricResults.every((r) => r && (typeof r.earned === 'boolean' || typeof r.earned === 'string'))
+  );
 }
 
 // The model's "explanation" is often a near-verbatim copy of the correct choice text, but the
@@ -338,6 +354,39 @@ router.post('/ap/frq', async (req, res, next) => {
     );
 
     res.json({ frqs: sanitizeFrqs(parsed.frqs) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/ap/frq/grade', async (req, res, next) => {
+  try {
+    const { subject, prompt, rubric, response } = req.body;
+    if (!AP_SUBJECTS.has(subject)) {
+      return res.status(400).json({ error: 'Unknown AP subject.' });
+    }
+    if (!prompt || !Array.isArray(rubric) || !rubric.length || !response || !response.trim()) {
+      return res.status(400).json({ error: 'prompt, rubric, and a non-empty response are required.' });
+    }
+
+    const parsed = await generateJsonWithRetry(
+      apFrqGradePrompt(subject, prompt, rubric, response),
+      { json: true, temperature: 0.3, maxTokens: 700 },
+      (p) => isWellFormedGrade(p, rubric.length)
+    );
+
+    const rubricResults = parsed.rubricResults.slice(0, rubric.length).map((r, i) => ({
+      point: rubric[i],
+      earned: toBool(r.earned),
+      note: typeof r.note === 'string' ? r.note : '',
+    }));
+
+    res.json({
+      earnedPoints: rubricResults.filter((r) => r.earned).length,
+      totalPoints: rubric.length,
+      overallFeedback: typeof parsed.overallFeedback === 'string' ? parsed.overallFeedback : '',
+      rubricResults,
+    });
   } catch (err) {
     next(err);
   }

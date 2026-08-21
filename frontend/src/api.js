@@ -89,3 +89,7 @@ export function requestAPMcqs({ subject }) {
 export function requestAPFrqs({ subject }) {
   return jsonRequest('/ap/frq', { subject });
 }
+
+export function requestFrqGrade({ subject, prompt, rubric, response }) {
+  return jsonRequest('/ap/frq/grade', { subject, prompt, rubric, response });
+}

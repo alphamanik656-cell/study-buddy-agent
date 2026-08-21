@@ -126,6 +126,33 @@ keep going:
 {"frqs":[{"prompt":"...","rubric":["...","...","..."],"sampleResponse":"..."}, ... 1 more ...]}`;
 }
 
+export function apFrqGradePrompt(subject, frqPrompt, rubric, response) {
+  const rubricList = rubric.map((r, i) => `${i + 1}. ${r}`).join('\n');
+  return `You are an experienced AP ${subject} exam grader using the official-style scoring rubric below.
+
+FREE RESPONSE QUESTION:
+"""
+${frqPrompt}
+"""
+
+SCORING RUBRIC (award each point independently):
+${rubricList}
+
+STUDENT'S RESPONSE:
+"""
+${response}
+"""
+
+For each of the ${rubric.length} rubric points above, IN ORDER, decide whether the student's response
+earns that specific point. Be a fair but genuine grader: award a point only when the response actually
+demonstrates it, not just mentions related words. Also write "overallFeedback": 2-3 sentences,
+encouraging but honest, naming the single biggest thing that would improve the response.
+
+JSON only, no markdown fences, no extra text. Return exactly ${rubric.length} items in "rubricResults",
+in the same order as the rubric points listed above:
+{"rubricResults":[{"earned":true,"note":"..."}, ... ${rubric.length} items total ...],"overallFeedback":"..."}`;
+}
+
 export function tutorSystemPrompt(sourceText) {
   return `You are a patient, encouraging study tutor helping a neurodivergent student understand their own notes.
 Answer ONLY using the study material below — if the answer isn't in the material, say so plainly rather than

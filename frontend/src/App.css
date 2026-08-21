@@ -1031,3 +1031,79 @@ button.tab.active {
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
+.ap-frq-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ap-frq-actions .primary,
+.ap-frq-actions .secondary {
+  flex: 1;
+  width: auto;
+  min-width: 180px;
+}
+
+.ap-frq-grade {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--plum-soft);
+}
+
+.ap-frq-grade-score {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--plum);
+}
+
+.ap-frq-grade-feedback {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.ap-frq-grade-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ap-frq-grade-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.ap-frq-grade-list li.earned {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+}
+
+.ap-frq-grade-list li.missed {
+  background: #fbe3e4;
+  color: var(--danger);
+}
+
+.ap-frq-grade-icon {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ap-frq-grade-point {
+  font-weight: 600;
+}
+
+.ap-frq-grade-note {
+  font-weight: 400;
+}
